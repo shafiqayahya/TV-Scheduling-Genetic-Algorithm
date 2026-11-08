@@ -187,10 +187,12 @@ with scheduler:
                         "trial": number
                     })
 
-                    st.success(
-                        f"Trial {number} saved successfully!"
+                   st.toast(
+                        f"Trial {number} saved successfully!",
+                        icon="✅"
                     )
 
+                    st.rerun()
 
 # ==================================================
 # TAB 2: TRIAL COMPARISON
