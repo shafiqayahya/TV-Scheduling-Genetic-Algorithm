@@ -94,3 +94,267 @@ current = st.session_state.get("current")
 if current is not None:
     a, b, c, d = st.columns(4)
     a.metric("Best Fitness", f"{current['score']:.2f}")
+
+    b.metric("Upper Bound", f"{current['upper']:.2f}")
+    c.metric(
+        "Fitness / Upper Bound",
+        f"{100 * current['score'] / current['upper']:.1f}%"
+        if current["upper"] else "N/A"
+    )
+    d.metric("Saved Trials", len(st.session_state.trials))
+else:
+    a, b, c = st.columns(3)
+    a.metric("Time Slots", len(hours))
+    b.metric("Program Categories", len(ratings))
+    c.metric("Saved Trials", len(st.session_state.trials))
+
+
+# ==================================================
+# THREE MAIN TABS
+# ==================================================
+
+scheduler, comparison, changes = st.tabs([
+    "📅 GA Scheduler",
+    "📊 Trial Comparison",
+    "📝 Rating Changes"
+])
+
+
+# ==================================================
+# TAB 1: GA SCHEDULER
+# ==================================================
+
+with scheduler:
+    st.subheader("Generated TV Schedule")
+
+    if current is None:
+        st.info(
+            "Configure the GA parameters in the sidebar "
+            "and click Run Genetic Algorithm."
+        )
+    else:
+        st.caption(
+            f"CO_R = {current['co_r']:.2f} | "
+            f"MUT_R = {current['mut_r']:.2f} | "
+            f"Generations = {current['generations']} | "
+            f"Population = {current['population_size']} | "
+            f"Seed = {current['seed']}"
+        )
+
+        schedule_df = pd.DataFrame(current["rows"])
+
+        st.dataframe(
+            schedule_df,
+            use_container_width=True,
+            hide_index=True,
+            height=650
+        )
+
+        st.subheader("Fitness Convergence")
+
+        history_df = pd.DataFrame(current["history"])
+
+        st.line_chart(
+            history_df.set_index("Generation"),
+            use_container_width=True
+        )
+
+        left, right = st.columns(2)
+
+        with left:
+            st.download_button(
+                "⬇ Download Schedule CSV",
+                data=schedule_df.to_csv(index=False),
+                file_name="generated_schedule.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+
+        with right:
+            if st.button(
+                "💾 Save Trial for Comparison",
+                use_container_width=True
+            ):
+                if len(st.session_state.trials) >= 3:
+                    st.warning(
+                        "Three trials have already been saved."
+                    )
+                else:
+                    number = len(st.session_state.trials) + 1
+
+                    st.session_state.trials.append({
+                        **current,
+                        "trial": number
+                    })
+
+                    st.success(
+                        f"Trial {number} saved successfully!"
+                    )
+
+
+# ==================================================
+# TAB 2: TRIAL COMPARISON
+# ==================================================
+
+with comparison:
+    st.subheader("Three-Trial Experiment Comparison")
+
+    trials = st.session_state.trials
+
+    if not trials:
+        st.info(
+            "No trials saved yet. Generate a schedule "
+            "and save it from the GA Scheduler tab."
+        )
+
+    else:
+        records = []
+
+        for trial in trials:
+            records.append({
+                "Trial": trial["trial"],
+                "CO_R": trial["co_r"],
+                "MUT_R": trial["mut_r"],
+                "Generations": trial["generations"],
+                "Population": trial["population_size"],
+                "Seed": trial["seed"],
+                "Fitness": round(trial["score"], 4),
+                "Fitness / Upper Bound (%)": (
+                    round(
+                        100 * trial["score"] / trial["upper"],
+                        2
+                    )
+                    if trial["upper"] else None
+                )
+            })
+
+        summary = pd.DataFrame(records)
+
+        st.dataframe(
+            summary,
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.subheader("Fitness Comparison")
+
+        st.bar_chart(
+            summary.set_index("Trial")[["Fitness"]],
+            use_container_width=True
+        )
+
+        best = max(
+            trials,
+            key=lambda trial: trial["score"]
+        )
+
+        st.success(
+            f"Highest observed fitness: Trial {best['trial']} "
+            f"({best['score']:.2f}) | "
+            f"CO_R = {best['co_r']:.2f} | "
+            f"MUT_R = {best['mut_r']:.2f}"
+        )
+
+        st.download_button(
+            "⬇ Download Trial Comparison CSV",
+            data=summary.to_csv(index=False),
+            file_name="trial_comparison.csv",
+            mime="text/csv"
+        )
+
+        st.subheader("Full Schedule for Each Trial")
+
+        for trial in trials:
+            with st.expander(
+                f"Trial {trial['trial']} | "
+                f"Fitness = {trial['score']:.2f}"
+            ):
+                trial_df = pd.DataFrame(trial["rows"])
+
+                st.dataframe(
+                    trial_df,
+                    use_container_width=True,
+                    hide_index=True
+                )
+
+                st.download_button(
+                    f"⬇ Download Trial {trial['trial']} CSV",
+                    data=trial_df.to_csv(index=False),
+                    file_name=f"trial_{trial['trial']}.csv",
+                    mime="text/csv",
+                    key=f"download_{trial['trial']}"
+                )
+
+        if st.button("🗑 Clear Saved Trials"):
+            st.session_state.trials = []
+            st.rerun()
+
+
+# ==================================================
+# TAB 3: RATING CHANGES
+# ==================================================
+
+with changes:
+    st.subheader("CSV Rating Modifications")
+
+    modified = pd.read_csv(MODIFIED)
+
+    if ORIGINAL.exists():
+        original = pd.read_csv(ORIGINAL)
+
+        old = original.set_index("Type of Program")
+        new = modified.set_index("Type of Program")
+
+        changed = []
+
+        for program in new.index:
+            for column in new.columns:
+                original_value = float(
+                    old.loc[program, column]
+                )
+
+                modified_value = float(
+                    new.loc[program, column]
+                )
+
+                if original_value != modified_value:
+                    changed.append({
+                        "Program": program,
+                        "Time": column.replace("Hour ", "") + ":00",
+                        "Original Rating": original_value,
+                        "Modified Rating": modified_value,
+                        "Difference": round(
+                            modified_value - original_value,
+                            3
+                        )
+                    })
+
+        st.metric(
+            "Changed Rating Values",
+            len(changed)
+        )
+
+        if changed:
+            st.dataframe(
+                pd.DataFrame(changed),
+                use_container_width=True,
+                hide_index=True
+            )
+        else:
+            st.info(
+                "No rating differences were detected."
+            )
+
+    else:
+        st.warning(
+            "Original CSV not found. "
+            "Upload program_ratings_original.csv."
+        )
+
+    with st.expander("View Full Modified Dataset"):
+        st.dataframe(
+            modified,
+            use_container_width=True,
+            hide_index=True
+        )
+
