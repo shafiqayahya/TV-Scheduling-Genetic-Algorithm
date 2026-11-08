@@ -16,94 +16,6 @@ ORIGINAL = ROOT / "program_ratings_original.csv"
 
 st.markdown("""
 
-/* =========================================
-   BURGUNDY GRADIENT SIDEBAR
-   ========================================= */
-
-section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        160deg,
-        #64152D 0%,
-        #881337 55%,
-        #BE365A 100%
-    ) !important;
-    border-right: 1px solid #881337;
-}
-
-/* Sidebar headings, labels and text */
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3,
-section[data-testid="stSidebar"] p,
-section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
-    color: #FFFFFF !important;
-}
-
-/* Divider */
-section[data-testid="stSidebar"] hr {
-    border-color: rgba(255,255,255,0.30) !important;
-}
-
-/* Slider label and current value */
-section[data-testid="stSidebar"] [data-testid="stSlider"] {
-    color: #FFFFFF !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
-    color: #FFE8EE !important;
-}
-
-/* Slider active track */
-section[data-testid="stSidebar"] [data-baseweb="slider"] [role="slider"] {
-    background: #FFD6E2 !important;
-    border-color: #FFFFFF !important;
-}
-
-/* Number inputs */
-section[data-testid="stSidebar"] [data-testid="stNumberInput"] input {
-    background: #FFF1F4 !important;
-    color: #64152D !important;
-    font-weight: 600;
-    border-radius: 9px;
-}
-
-/* RUN GENETIC ALGORITHM BUTTON */
-section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
-    background: linear-gradient(
-        100deg,
-        #FFD6E2 0%,
-        #F7A8BF 100%
-    ) !important;
-    color: #64152D !important;
-    border: 1px solid #FFE8EE !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1rem !important;
-    font-size: 14px !important;
-    font-weight: 800 !important;
-    box-shadow: 0 5px 15px rgba(40,0,15,0.20);
-    transition: all 0.2s ease;
-}
-
-section[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
-    background: #FFFFFF !important;
-    color: #881337 !important;
-    border-color: #FFFFFF !important;
-    box-shadow: 0 7px 20px rgba(40,0,15,0.28);
-}
-
-/* Saved Trials metric */
-section[data-testid="stSidebar"] [data-testid="stMetric"] {
-    background: rgba(255,255,255,0.12) !important;
-    border: 1px solid rgba(255,255,255,0.30) !important;
-    border-radius: 14px !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stMetricLabel"],
-section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
-    color: #FFFFFF !important;
-}
-
 <style>
 :root {--rose:#BE365A;--burgundy:#881337;--wine:#64152D;--blush:#FFF1F4;}
 .block-container {padding-top:1.6rem;padding-bottom:3rem;max-width:1250px;}
@@ -116,52 +28,7 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
 [data-testid="stMetricValue"] {color:#881337;}
 .stButton>button[kind="primary"] {background:#A7234A;border-color:#A7234A;color:white;border-radius:11px;font-weight:700;}
 .stButton>button[kind="primary"]:hover {background:#881337;border-color:#881337;color:white;}
-/* Sidebar background */
-section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        160deg,
-        #64152D 0%,
-        #881337 58%,
-        #BE365A 100%
-    ) !important;
-    border-right: 1px solid #881337;
-}
-
-/* Sidebar text */
-section[data-testid="stSidebar"] h3,
-section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"],
-section[data-testid="stSidebar"] [data-testid="stMetricLabel"],
-section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
-    color: #FFFFFF !important;
-}
-
-/* Sidebar number inputs */
-section[data-testid="stSidebar"] [data-testid="stNumberInput"] input {
-    background: #FFF1F4 !important;
-    color: #64152D !important;
-}
-
-/* Run Genetic Algorithm button */
-section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
-    background: #F7A8BF !important;
-    color: #64152D !important;
-    border: 1px solid #FFD6E2 !important;
-    border-radius: 11px !important;
-    font-weight: 700 !important;
-}
-
-section[data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
-    background: #FFFFFF !important;
-    color: #881337 !important;
-    border-color: #FFFFFF !important;
-}
-
-/* Saved Trials metric */
-section[data-testid="stSidebar"] [data-testid="stMetric"] {
-    background: rgba(255,255,255,0.12) !important;
-    border: 1px solid rgba(255,255,255,0.30) !important;
-}
+section[data-testid="stSidebar"] {background:#FFF4F6;border-right:1px solid #F4D8E0;}
 [data-testid="stTabs"] button[aria-selected="true"] {color:#881337;}
 [data-testid="stTabs"] [data-baseweb="tab-highlight"] {background:#BE365A;}
 [data-testid="stDataFrame"] {border:1px solid #F0D6DF;border-radius:12px;overflow:hidden;}
@@ -494,4 +361,3 @@ with changes:
             use_container_width=True,
             hide_index=True
         )
-
