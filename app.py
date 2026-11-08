@@ -49,7 +49,7 @@ if "trials" not in st.session_state:
     st.session_state.trials = []
 
 with st.sidebar:
-    st.markdown("### 🌹 GA Control Panel")
+    st.markdown("### GA Control Panel")
     co_r = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=0.95, value=0.80, step=0.01)
     mut_r = st.number_input("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.20, step=0.01, format="%.2f")
     st.divider()
