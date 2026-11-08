@@ -114,9 +114,9 @@ else:
 # ==================================================
 
 scheduler, comparison, changes = st.tabs([
-    "📅 GA Scheduler",
-    "📊 Trial Comparison",
-    "📝 Rating Changes"
+    "GA Scheduler",
+    "Trial Comparison",
+    "Rating Changes"
 ])
 
 
