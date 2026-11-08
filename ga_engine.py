@@ -1,23 +1,30 @@
 import csv
+import math
 import random
-from pathlib import Path
 
 
 def load_ratings(path):
-    with open(path, newline='', encoding='utf-8-sig') as file:
+    with open(path, newline="", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         columns = reader.fieldnames
-        if not columns or columns[0] != 'Type of Program':
-            raise ValueError('Expected first CSV column: Type of Program')
-        hours = [int(c.replace('Hour ', '')) for c in columns[1:]]
+        if not columns or columns[0] != "Type of Program":
+            raise ValueError("Expected first CSV column: Type of Program")
+        if len(columns) < 3 or any(not c.startswith("Hour ") for c in columns[1:]):
+            raise ValueError("Expected at least two 'Hour N' columns")
+        hours = [int(column.removeprefix("Hour ")) for column in columns[1:]]
+        if len(set(hours)) != len(hours):
+            raise ValueError("Hour columns must be unique")
         ratings = {}
         for row in reader:
-            name = row[columns[0]].strip()
+            name = (row[columns[0]] or "").strip()
             if not name or name in ratings:
-                raise ValueError('Program names must be non-empty and unique')
-            ratings[name] = [float(row[c]) for c in columns[1:]]
-    if not ratings or not hours:
-        raise ValueError('CSV must contain programs and time slots')
+                raise ValueError("Program names must be non-empty and unique")
+            values = [float(row[column]) for column in columns[1:]]
+            if not all(math.isfinite(v) and v >= 0 for v in values):
+                raise ValueError("Ratings must be finite and non-negative")
+            ratings[name] = values
+    if len(ratings) < 2:
+        raise ValueError("At least two programs are required")
     return ratings, hours
 
 
@@ -28,31 +35,34 @@ def fitness(schedule, ratings):
 def run_ga(ratings, hours, crossover_rate=0.8, mutation_rate=0.2,
            generations=100, population_size=50, elitism_size=2, seed=42):
     if not 0 <= crossover_rate <= 0.95 or not 0 <= mutation_rate <= 1:
-        raise ValueError('Invalid crossover or mutation rate')
+        raise ValueError("Invalid crossover or mutation rate")
     if population_size < 2 or not 1 <= elitism_size < population_size or generations < 1:
-        raise ValueError('Invalid GA configuration')
-    rng = random.Random(seed)
+        raise ValueError("Invalid GA configuration")
     programs = list(ratings)
     n = len(hours)
-    # One gene per time slot. Programs may repeat because there are more slots than programs.
+    if len(programs) < 2 or n < 2 or any(len(v) != n for v in ratings.values()):
+        raise ValueError("At least two programs, two slots and complete ratings are required")
+
+    rng = random.Random(seed)
     population = [[rng.choice(programs) for _ in range(n)] for _ in range(population_size)]
     best = None
-    best_score = float('-inf')
+    best_score = float("-inf")
     history = []
 
     def tournament():
         candidates = rng.choices(population, k=3)
-        return max(candidates, key=lambda s: fitness(s, ratings))
+        return max(candidates, key=lambda schedule: fitness(schedule, ratings))
 
     for generation in range(generations + 1):
-        population.sort(key=lambda s: fitness(s, ratings), reverse=True)
+        population.sort(key=lambda schedule: fitness(schedule, ratings), reverse=True)
         score = fitness(population[0], ratings)
         if score > best_score:
             best_score = score
             best = population[0].copy()
-        history.append({'Generation': generation, 'Best Fitness': round(best_score, 4)})
+        history.append({"Generation": generation, "Best Fitness": round(best_score, 4)})
         if generation == generations:
             break
+
         next_population = [p.copy() for p in population[:elitism_size]]
         while len(next_population) < population_size:
             p1, p2 = tournament(), tournament()
@@ -63,15 +73,18 @@ def run_ga(ratings, hours, crossover_rate=0.8, mutation_rate=0.2,
             else:
                 c1, c2 = p1.copy(), p2.copy()
             for child in (c1, c2):
+                # MUT_R is per offspring: change one program gene if mutation occurs.
                 if rng.random() < mutation_rate:
                     idx = rng.randrange(n)
                     alternatives = [p for p in programs if p != child[idx]]
-                    child[idx] = rng.choice(alternatives or programs)
+                    child[idx] = rng.choice(alternatives)
                 if len(next_population) < population_size:
                     next_population.append(child)
         population = next_population
 
-    rows = [{'Time Slot': f'{hour:02d}:00', 'Program': program,
-             'Rating': ratings[program][i]} for i, (hour, program) in enumerate(zip(hours, best))]
-    upper_bound = sum(max(r[i] for r in ratings.values()) for i in range(n))
+    rows = [
+        {"Time Slot": f"{hour:02d}:00", "Program": program, "Rating": ratings[program][i]}
+        for i, (hour, program) in enumerate(zip(hours, best))
+    ]
+    upper_bound = sum(max(values[i] for values in ratings.values()) for i in range(n))
     return rows, best_score, upper_bound, history
