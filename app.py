@@ -15,7 +15,6 @@ MODIFIED = ROOT / "program_ratings_modified.csv"
 ORIGINAL = ROOT / "program_ratings_original.csv"
 
 st.markdown("""
-
 <style>
 :root {--rose:#BE365A;--burgundy:#881337;--wine:#64152D;--blush:#FFF1F4;}
 .block-container {padding-top:1.6rem;padding-bottom:3rem;max-width:1250px;}
