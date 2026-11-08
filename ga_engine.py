@@ -83,7 +83,7 @@ def run_ga(ratings, hours, crossover_rate=0.8, mutation_rate=0.2,
         population = next_population
 
     rows = [
-        {"Time Slot": f"{hour:02d}:00", "Program": program, "Rating": ratings[program][i]}
+        {"Hour": f"Hour {hour}, "Program": program, "Rating": ratings[program][i]}
         for i, (hour, program) in enumerate(zip(hours, best))
     ]
     upper_bound = sum(max(values[i] for values in ratings.values()) for i in range(n))
