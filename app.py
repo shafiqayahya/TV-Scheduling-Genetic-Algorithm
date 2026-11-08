@@ -104,7 +104,7 @@ if current is not None:
     d.metric("Saved Trials", len(st.session_state.trials))
 else:
     a, b, c = st.columns(3)
-    a.metric("Total Hours", len(hours))
+    a.metric("Time slots", len(hours))
     b.metric("Program Categories", len(ratings))
     c.metric("Saved Trials", len(st.session_state.trials))
 
