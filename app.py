@@ -1,740 +1,145 @@
-
-import streamlit as st
-import pandas as pd
-import numpy as np
 from pathlib import Path
+import pandas as pd
+import streamlit as st
+from ga_engine import load_ratings, run_ga
 
-from ga_engine import (
-    load_ratings,
-    genetic_algorithm,
-    create_schedule,
-    calculate_upper_bound,
-)
+st.set_page_config(page_title="TV Scheduling | Genetic Algorithm", page_icon="📺", layout="wide", initial_sidebar_state="expanded")
+ROOT = Path(__file__).parent
+MODIFIED = ROOT / "program_ratings_modified.csv"
+ORIGINAL = ROOT / "program_ratings_original.csv"
 
-# ==========================================
-# PAGE CONFIGURATION
-# ==========================================
+st.markdown("""<style>
+:root {--rose:#BE365A;--burgundy:#881337;--wine:#64152D;--blush:#FFF1F4;}
+.block-container {padding-top: 1.6rem; padding-bottom: 3rem; max-width: 1250px;}
+.hero {background:linear-gradient(115deg,#64152D 0%,#881337 58%,#BE365A 100%); padding:32px 34px; border-radius:19px; color:white; margin-bottom:20px; box-shadow:0 12px 30px rgba(100,21,45,.15);}
+.hero .eyebrow {color:#FFDCE5; font-size:12px; letter-spacing:1.4px; font-weight:700;}
+.hero h1 {color:#FFFFFF !important; margin:8px 0; font-size:2.35rem; line-height:1.2;}
+.hero p {color:#FFE8EE; margin:0; font-size:15px;}
+[data-testid="stMetric"] {background:#FFF4F6; border:1px solid #F4D8E0; padding:17px; border-radius:14px;}
+[data-testid="stMetricLabel"] {color:#75233F;}
+[data-testid="stMetricValue"] {color:#881337;}
+.stButton>button[kind="primary"] {background:#A7234A; border-color:#A7234A; color:white; border-radius:11px; font-weight:700;}
+.stButton>button[kind="primary"]:hover {background:#881337; border-color:#881337; color:white;}
+section[data-testid="stSidebar"] {background:#FFF4F6; border-right:1px solid #F4D8E0;}
+[data-testid="stTabs"] button[aria-selected="true"] {color:#881337;}
+[data-testid="stTabs"] [data-baseweb="tab-highlight"] {background:#BE365A;}
+a {color:#A7234A;}
+</style>""", unsafe_allow_html=True)
 
-st.set_page_config(
-    page_title="TV Scheduling Optimizer",
-    page_icon="📺",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-# ==========================================
-# ROSE & BURGUNDY DESIGN
-# ==========================================
-
-st.markdown("""
-<style>
-.stApp {
-    background-color: #FFF8FA;
-    color: #491528;
-}
-
-.block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
-    max-width: 1250px;
-}
-
-.hero {
-    background: linear-gradient(120deg, #65112E, #9F3659);
-    padding: 34px;
-    border-radius: 20px;
-    color: white;
-    margin-bottom: 24px;
-}
-
-.hero h1 {
-    color: white;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-.hero p {
-    color: #FFE5ED;
-    font-size: 1rem;
-}
-
-.metric-card {
-    background: white;
-    padding: 22px;
-    border-radius: 15px;
-    border: 1px solid #F0CED9;
-    box-shadow: 0 3px 12px rgba(101,17,46,0.06);
-    margin-bottom: 12px;
-}
-
-.metric-label {
-    color: #94526B;
-    font-size: 0.9rem;
-}
-
-.metric-value {
-    color: #65112E;
-    font-size: 1.8rem;
-    font-weight: 750;
-}
-
-.section-heading {
-    color: #65112E;
-    font-size: 1.35rem;
-    font-weight: 700;
-    margin-top: 20px;
-    margin-bottom: 12px;
-}
-
-.stButton > button[kind="primary"] {
-    background: #9F3659;
-    border: 1px solid #9F3659;
-    color: white;
-    border-radius: 10px;
-    font-weight: 650;
-}
-
-.stButton > button[kind="primary"]:hover {
-    background: #65112E;
-    border-color: #65112E;
-    color: white;
-}
-
-div[data-testid="stTabs"] button {
-    font-weight: 600;
-}
-
-div[data-testid="stDataFrame"] {
-    border-radius: 12px;
-    overflow: hidden;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# ==========================================
-# DATA LOADING
-# ==========================================
-
-@st.cache_data
-def get_data():
-    return load_ratings("program_ratings_modified.csv")
-
-
-try:
-    programs, hours, ratings = get_data()
-except Exception as error:
-    st.error(f"Unable to load modified CSV: {error}")
-    st.stop()
-
-upper_bound = calculate_upper_bound(ratings)
-
+ratings, hours = load_ratings(MODIFIED)
 if "trials" not in st.session_state:
     st.session_state.trials = []
 
-if "current_result" not in st.session_state:
-    st.session_state.current_result = None
-
-
-# ==========================================
-# HELPER FUNCTIONS
-# ==========================================
-
-def metric_card(label, value):
-    st.markdown(
-        f"""
-        <div class="metric-card">
-            <div class="metric-label">{label}</div>
-            <div class="metric-value">{value}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def show_schedule(schedule):
-    st.dataframe(
-        schedule,
-        use_container_width=True,
-        hide_index=True,
-    )
-
-
-def show_result(result):
-    fitness = result["fitness"]
-    efficiency = (
-        fitness / upper_bound * 100
-        if upper_bound > 0 else 0
-    )
-
-    a, b, c = st.columns(3)
-
-    with a:
-        metric_card("Best Fitness", f"{fitness:.2f}")
-
-    with b:
-        metric_card("Upper Bound", f"{upper_bound:.2f}")
-
-    with c:
-        metric_card("Upper Bound Achieved", f"{efficiency:.1f}%")
-
-    st.markdown(
-        '<div class="section-heading">Generated TV Schedule</div>',
-        unsafe_allow_html=True,
-    )
-
-    show_schedule(result["schedule"])
-
-    st.download_button(
-        "📥 Download Schedule CSV",
-        data=result["schedule"].to_csv(index=False),
-        file_name="tv_schedule.csv",
-        mime="text/csv",
-        key="download_current",
-    )
-
-    st.markdown(
-        '<div class="section-heading">Fitness Convergence</div>',
-        unsafe_allow_html=True,
-    )
-
-    history = pd.DataFrame({
-        "Generation": range(len(result["history"])),
-        "Best Fitness": result["history"],
-    })
-
-    st.line_chart(
-        history.set_index("Generation"),
-        color="#A33B5D",
-    )
-
-
-# ==========================================
-# SIDEBAR
-# ==========================================
-
 with st.sidebar:
-    st.title("⚙️ GA Configuration")
-
-    st.caption("Configure the genetic algorithm.")
-
-    co_r = st.slider(
-        "Crossover Rate (CO_R)",
-        min_value=0.0,
-        max_value=0.95,
-        value=0.80,
-        step=0.01,
-    )
-
-    mut_r = st.number_input(
-        "Mutation Rate (MUT_R)",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.20,
-        step=0.01,
-        format="%.2f",
-    )
-
+    st.title("⚙️ GA Controls")
+    st.caption("Configure one experiment at a time")
+    co_r = st.slider("Crossover Rate (CO_R)", 0.0, 0.95, 0.80, 0.01)
+    mut_r = st.number_input("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.20, step=0.01, format="%.2f", help="Assignment default: 0.20. The stated experimental range is 0.01–0.05; clarify the contradiction with the lecturer.")
     if not 0.01 <= mut_r <= 0.05:
-        st.warning(
-            "The assignment specifies default MUT_R = 0.20, "
-            "but an experimental range of 0.01–0.05. "
-            "Please confirm this inconsistency with the lecturer."
-        )
-
-    st.markdown("#### Experimental Settings")
-
-    pop_size = st.number_input(
-        "Population Size",
-        min_value=2,
-        max_value=500,
-        value=50,
-        step=10,
-    )
-
-    generations = st.number_input(
-        "Generations",
-        min_value=1,
-        max_value=2000,
-        value=100,
-        step=10,
-    )
-
-    seed = st.number_input(
-        "Random Seed",
-        min_value=0,
-        value=42,
-        step=1,
-    )
-
-    run_ga = st.button(
-        "▶ Run Genetic Algorithm",
-        type="primary",
-        use_container_width=True,
-    )
-
+        st.warning("MUT_R is outside the stated trial range (0.01–0.05). The assignment also specifies a conflicting default of 0.20.")
+    generations = st.number_input("Generations", min_value=1, max_value=2000, value=100, step=10)
+    population_size = st.number_input("Population Size", min_value=4, max_value=1000, value=50, step=1)
+    seed = st.number_input("Random Seed", min_value=0, max_value=1000000, value=42, step=1)
+    run = st.button("▶ Run Genetic Algorithm", type="primary", use_container_width=True)
     st.divider()
+    st.caption("Recommended fair comparison: keep generations, population size and seed unchanged across trials.")
 
-    st.caption(
-        "JIE42903 | Evolutionary Computing"
-    )
+st.markdown('''<div class="hero"><div class="eyebrow">JIE42903 · EVOLUTIONARY COMPUTING</div><h1>📺 TV Scheduling Optimizer</h1><p>Genetic Algorithm · Interactive Scheduling & Experiment Dashboard</p></div>''', unsafe_allow_html=True)
+st.caption("18 hourly slots (06:00–23:00) · 10 program categories · Modified rating dataset")
 
+if run:
+    with st.spinner("Optimizing the TV schedule..."):
+        rows, score, upper, history = run_ga(ratings, hours, co_r, mut_r, int(generations), int(population_size), seed=int(seed))
+    st.session_state.current = {
+        "rows": rows, "score": score, "upper": upper, "history": history,
+        "co_r": co_r, "mut_r": mut_r, "seed": int(seed),
+        "generations": int(generations), "population_size": int(population_size),
+    }
 
-# ==========================================
-# RUN GENETIC ALGORITHM
-# ==========================================
-
-if run_ga:
-    with st.spinner("Optimizing TV schedule..."):
-        chromosome, fitness, history = genetic_algorithm(
-            ratings=ratings,
-            pop_size=int(pop_size),
-            generations=int(generations),
-            crossover_rate=float(co_r),
-            mutation_rate=float(mut_r),
-            seed=int(seed),
-        )
-
-        schedule = create_schedule(
-            chromosome, programs, hours, ratings
-        )
-
-        st.session_state.current_result = {
-            "co_r": float(co_r),
-            "mut_r": float(mut_r),
-            "pop_size": int(pop_size),
-            "generations": int(generations),
-            "seed": int(seed),
-            "fitness": fitness,
-            "history": history,
-            "schedule": schedule,
-        }
-
-    st.success("Genetic Algorithm completed successfully!")
-
-
-# ==========================================
-# HERO BANNER
-# ==========================================
-
-st.markdown("""
-<div class="hero">
-    <div style="font-size:12px; letter-spacing:2px;">
-        JIE42903 · EVOLUTIONARY COMPUTING
-    </div>
-    <h1>📺 TV Scheduling Optimizer</h1>
-    <p>
-        Intelligent Program Scheduling using Genetic Algorithm
-    </p>
-    <div style="margin-top:18px; font-size:13px;">
-        Genetic Optimization · Interactive Parameters ·
-        Experimental Analysis
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-
-# ==========================================
-# FIVE MAIN TABS
-# ==========================================
-
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "🏠 Overview",
-    "🧬 GA Scheduler",
-    "📊 Trial Comparison",
-    "📁 Rating Changes",
-    "📖 Methodology",
+overview, scheduler, comparison, changes, methodology = st.tabs([
+    "🏠 Overview", "📅 GA Scheduler", "📊 Trial Comparison", "📝 Rating Changes", "📘 Methodology"
 ])
 
+with overview:
+    st.subheader("Project overview")
+    st.write("The algorithm chooses a program for each hourly TV slot to maximize the sum of the corresponding viewer ratings. Programs may be repeated across different slots.")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Time slots", len(hours))
+    c2.metric("Available programs", len(ratings))
+    c3.metric("Saved trials", len(st.session_state.trials))
+    st.info("Assignment clarification needed: default MUT_R = 0.20 conflicts with the specified trial range 0.01–0.05. The app preserves the stated default and allows values in the trial range.")
+    st.markdown("**Workflow:** Choose parameters in the sidebar → Run GA → Review the full schedule → Save trial → Repeat with new rates → Compare all three trials.")
 
-# ==========================================
-# TAB 1: OVERVIEW
-# ==========================================
-
-with tab1:
-    st.markdown("### Project Overview")
-
-    st.write(
-        "This application uses a Genetic Algorithm "
-        "to generate TV program schedules based on "
-        "program rating data."
-    )
-
-    a, b, c = st.columns(3)
-
-    with a:
-        metric_card("Available Programs", len(programs))
-
-    with b:
-        metric_card("Scheduling Time Slots", len(hours))
-
-    with c:
-        metric_card("Rating Upper Bound", f"{upper_bound:.2f}")
-
-    st.markdown("### How to Use")
-
-    st.markdown("""
-    1. Configure the GA parameters in the sidebar.
-    2. Open the **GA Scheduler** tab.
-    3. Click **Run Genetic Algorithm**.
-    4. Review the schedule and fitness score.
-    5. Save the trial for comparison.
-    6. Repeat with different CO_R and MUT_R values.
-    7. Compare the three trials.
-    """)
-
-    st.info(
-        "The objective is to maximize the total "
-        "program rating across the scheduling slots."
-    )
-
-    if st.session_state.current_result is not None:
-        st.markdown("### Latest Optimization")
-
-        result = st.session_state.current_result
-
-        a, b = st.columns(2)
-
-        with a:
-            metric_card(
-                "Latest Fitness",
-                f"{result['fitness']:.2f}"
-            )
-
-        with b:
-            metric_card(
-                "Saved Trials",
-                len(st.session_state.trials)
-            )
-
-
-# ==========================================
-# TAB 2: GA SCHEDULER
-# ==========================================
-
-with tab2:
-    st.markdown("### Genetic Algorithm Scheduler")
-
-    st.write(
-        "Adjust the parameters in the sidebar "
-        "and run the Genetic Algorithm."
-    )
-
-    result = st.session_state.current_result
-
-    if result is None:
-        st.info(
-            "No schedule generated yet. "
-            "Click Run Genetic Algorithm in the sidebar."
-        )
+with scheduler:
+    if "current" not in st.session_state:
+        st.info("Set parameters in the sidebar and click **Run Genetic Algorithm** to generate a schedule.")
     else:
-        st.caption(
-            f"CO_R = {result['co_r']:.2f} | "
-            f"MUT_R = {result['mut_r']:.2f} | "
-            f"Population = {result['pop_size']} | "
-            f"Generations = {result['generations']} | "
-            f"Seed = {result['seed']}"
-        )
+        r = st.session_state.current
+        st.subheader("Generated TV Schedule")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total Fitness", f"{r['score']:.2f}")
+        c2.metric("Theoretical Upper Bound*", f"{r['upper']:.2f}")
+        c3.metric("Fitness / Upper Bound", f"{r['score']/r['upper']:.1%}" if r['upper'] else "N/A")
+        st.caption(f"CO_R = {r['co_r']:.2f} · MUT_R = {r['mut_r']:.2f} · Generations = {r['generations']} · Population = {r['population_size']} · Seed = {r['seed']}")
+        st.dataframe(pd.DataFrame(r["rows"]), use_container_width=True, hide_index=True, height=660)
+        st.caption("*Upper bound is the sum of the best available rating per time slot, assuming repeated programs are allowed and no additional scheduling constraints apply.")
+        st.subheader("Fitness convergence")
+        st.line_chart(pd.DataFrame(r["history"]).set_index("Generation"), use_container_width=True)
+        left, right = st.columns(2)
+        with left:
+            st.download_button("⬇ Download schedule CSV", pd.DataFrame(r["rows"]).to_csv(index=False), file_name="generated_schedule.csv", mime="text/csv", use_container_width=True)
+        with right:
+            if st.button("💾 Save this trial for comparison", use_container_width=True):
+                st.session_state.trials.append({**r, "trial": len(st.session_state.trials) + 1})
+                st.success(f"Trial {len(st.session_state.trials)} saved. Open the Trial Comparison tab.")
 
-        show_result(result)
-
-        st.markdown("### Save Experiment")
-
-        if len(st.session_state.trials) < 3:
-            if st.button(
-                "💾 Save This Trial for Comparison",
-                type="primary",
-            ):
-                trial = result.copy()
-                trial["trial_name"] = (
-                    f"Trial {len(st.session_state.trials) + 1}"
-                )
-
-                st.session_state.trials.append(trial)
-
-                st.success(
-                    f"{trial['trial_name']} saved successfully."
-                )
-        else:
-            st.warning(
-                "Three trials have already been saved. "
-                "Clear saved trials to start a new comparison."
-            )
-
-
-# ==========================================
-# TAB 3: TRIAL COMPARISON
-# ==========================================
-
-with tab3:
-    st.markdown("### Experimental Trial Comparison")
-
+with comparison:
+    st.subheader("Experiment comparison")
     trials = st.session_state.trials
-
-    st.write(
-        f"Saved trials: {len(trials)} / 3"
-    )
-
-    if len(trials) == 0:
-        st.info(
-            "Run the GA and save your first trial."
-        )
-
+    if not trials:
+        st.info("No saved trials yet. Run GA and save each trial from the GA Scheduler tab.")
     else:
-        summary = []
-
-        for trial in trials:
-            efficiency = (
-                trial["fitness"] / upper_bound * 100
-                if upper_bound > 0 else 0
-            )
-
-            summary.append({
-                "Trial": trial["trial_name"],
-                "CO_R": trial["co_r"],
-                "MUT_R": trial["mut_r"],
-                "Population": trial["pop_size"],
-                "Generations": trial["generations"],
-                "Seed": trial["seed"],
-                "Fitness": trial["fitness"],
-                "Upper Bound Achieved (%)": round(
-                    efficiency, 2
-                ),
-            })
-
-        comparison_df = pd.DataFrame(summary)
-
-        st.markdown("#### Parameter and Fitness Summary")
-
-        st.dataframe(
-            comparison_df,
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        st.download_button(
-            "📥 Download Trial Comparison",
-            data=comparison_df.to_csv(index=False),
-            file_name="ga_trial_comparison.csv",
-            mime="text/csv",
-        )
-
-        st.markdown("#### Fitness Comparison")
-
-        st.bar_chart(
-            comparison_df.set_index("Trial")[["Fitness"]],
-            color="#A33B5D",
-        )
-
-        best_trial = max(
-            trials,
-            key=lambda trial: trial["fitness"]
-        )
-
-        st.success(
-            f"Highest observed fitness: "
-            f"{best_trial['trial_name']} "
-            f"({best_trial['fitness']:.2f})"
-        )
-
-        st.caption(
-            "The highest fitness identifies the best "
-            "observed schedule among the saved trials, "
-            "not necessarily the best parameter setting "
-            "across repeated runs."
-        )
-
-        st.markdown("### Full Schedule for Each Trial")
-
-        for trial in trials:
-            with st.expander(
-                f"{trial['trial_name']} — "
-                f"Fitness {trial['fitness']:.2f}",
-                expanded=True,
-            ):
-                st.write(
-                    f"CO_R: {trial['co_r']:.2f} | "
-                    f"MUT_R: {trial['mut_r']:.2f}"
-                )
-
-                show_schedule(trial["schedule"])
-
-                st.download_button(
-                    "Download Schedule",
-                    data=trial["schedule"].to_csv(index=False),
-                    file_name=(
-                        f"{trial['trial_name'].replace(' ', '_')}"
-                        "_schedule.csv"
-                    ),
-                    mime="text/csv",
-                    key=f"download_{trial['trial_name']}",
-                )
-
-        st.markdown("### Reset Experiments")
-
-        if st.button("🗑️ Clear Saved Trials"):
+        records = [{"Trial": t["trial"], "CO_R": t["co_r"], "MUT_R": t["mut_r"], "Generations": t["generations"], "Population": t["population_size"], "Seed": t["seed"], "Fitness": round(t["score"], 4), "Fitness / Upper Bound (%)": round(100 * t["score"] / t["upper"], 2) if t["upper"] else None} for t in trials]
+        summary = pd.DataFrame(records)
+        st.dataframe(summary, use_container_width=True, hide_index=True)
+        st.bar_chart(summary.set_index("Trial")[["Fitness"]])
+        best = max(trials, key=lambda t: t["score"])
+        st.success(f"Highest observed fitness: Trial {best['trial']} ({best['score']:.2f}), CO_R={best['co_r']:.2f}, MUT_R={best['mut_r']:.2f}. This is a result for the recorded runs, not proof of universal optimality.")
+        st.download_button("⬇ Download trial comparison CSV", summary.to_csv(index=False), file_name="trial_comparison.csv", mime="text/csv")
+        st.markdown("### Full schedule for each trial")
+        for t in trials:
+            with st.expander(f"Trial {t['trial']} · CO_R {t['co_r']:.2f} · MUT_R {t['mut_r']:.2f} · Fitness {t['score']:.2f}", expanded=len(trials) <= 3):
+                st.dataframe(pd.DataFrame(t["rows"]), use_container_width=True, hide_index=True, height=470)
+                st.download_button(f"⬇ Download Trial {t['trial']} schedule", pd.DataFrame(t["rows"]).to_csv(index=False), file_name=f"trial_{t['trial']}_schedule.csv", mime="text/csv", key=f"dl_{t['trial']}")
+        st.markdown("### Discussion prompts")
+        st.write("Compare the fitness values and scheduled programs, describe convergence trends, and explain which recorded combination performed best. Because GA is stochastic, repeat trials using multiple seeds before making broader claims.")
+        if st.button("🗑 Clear saved trials"):
             st.session_state.trials = []
             st.rerun()
 
-
-# ==========================================
-# TAB 4: RATING CHANGES
-# ==========================================
-
-with tab4:
-    st.markdown("### Program Rating Data")
-
-    modified_df = pd.read_csv(
-        "program_ratings_modified.csv"
-    )
-
-    st.markdown("#### Modified Rating Dataset")
-
-    st.dataframe(
-        modified_df,
-        use_container_width=True,
-        hide_index=True,
-    )
-
-    original_path = Path(
-        "program_ratings_original.csv"
-    )
-
-    if original_path.exists():
-        original_df = pd.read_csv(original_path)
-
-        st.markdown("#### Original vs Modified Ratings")
-
-        if (
-            original_df.shape == modified_df.shape
-            and original_df.columns.equals(
-                modified_df.columns
-            )
-            and original_df.iloc[:, 0].equals(
-                modified_df.iloc[:, 0]
-            )
-        ):
-            changes = []
-
-            for row in range(len(original_df)):
-                for col in original_df.columns[1:]:
-                    old = original_df.loc[row, col]
-                    new = modified_df.loc[row, col]
-
-                    if str(old) != str(new):
-                        changes.append({
-                            "Program": original_df.iloc[row, 0],
-                            "Time Slot": col,
-                            "Original Rating": old,
-                            "Modified Rating": new,
-                        })
-
-            if changes:
-                st.dataframe(
-                    pd.DataFrame(changes),
-                    use_container_width=True,
-                    hide_index=True,
-                )
-            else:
-                st.info("No rating changes detected.")
-        else:
-            st.warning(
-                "Original and modified CSV structures "
-                "do not match. Check row order and columns."
-            )
+with changes:
+    st.subheader("CSV rating modifications")
+    modified = pd.read_csv(MODIFIED)
+    st.write("The deployed algorithm uses the **modified** rating file.")
+    if ORIGINAL.exists():
+        original = pd.read_csv(ORIGINAL)
+        old = original.set_index("Type of Program")
+        new = modified.set_index("Type of Program")
+        changes_rows = []
+        for name in new.index:
+            for col in new.columns:
+                if float(old.loc[name, col]) != float(new.loc[name, col]):
+                    changes_rows.append({"Program": name, "Time": col.replace("Hour ", "") + ":00", "Original Rating": float(old.loc[name, col]), "Modified Rating": float(new.loc[name, col]), "Difference": round(float(new.loc[name, col]) - float(old.loc[name, col]), 3)})
+        st.metric("Modified rating cells", len(changes_rows))
+        st.dataframe(pd.DataFrame(changes_rows), use_container_width=True, hide_index=True)
+        st.caption("Rating changes are experimental assumptions, not verified audience measurements. Explain the rationale for each change in the written report.")
     else:
-        st.warning(
-            "Original CSV not found. Upload "
-            "program_ratings_original.csv to GitHub "
-            "to display the rating changes."
-        )
+        st.warning("Original CSV not uploaded. Add program_ratings_original.csv to display the before/after comparison.")
+    with st.expander("View full modified rating dataset"):
+        st.dataframe(modified, use_container_width=True, hide_index=True)
 
-    st.caption(
-        "Modified ratings represent assumptions "
-        "for the scheduling experiment."
-    )
-
-
-# ==========================================
-# TAB 5: METHODOLOGY
-# ==========================================
-
-with tab5:
-    st.markdown("### Genetic Algorithm Methodology")
-
-    st.markdown("""
-    **1. Population Initialization**
-
-    Generate random chromosomes representing
-    TV program assignments for each time slot.
-
-    **2. Fitness Evaluation**
-
-    Calculate the total rating of all scheduled
-    programs.
-
-    **3. Tournament Selection**
-
-    Select better-performing chromosomes
-    as parents.
-
-    **4. Single-Point Crossover**
-
-    Exchange chromosome segments between
-    two parents based on CO_R.
-
-    **5. Mutation**
-
-    Randomly change program assignments
-    based on MUT_R.
-
-    **6. Elitism**
-
-    Preserve the best chromosome in each
-    generation.
-
-    **7. Final Schedule**
-
-    Return the chromosome with the highest
-    fitness in the final population.
-    """)
-
-    st.markdown("### Fitness Function")
-
-    st.latex(
-        r"F(C)=\\sum_{t=1}^{T} R_{C_t,t}"
-    )
-
-    st.write(
-        "Where C is a chromosome, T is the number "
-        "of time slots, and R is the rating of the "
-        "selected program at each time slot."
-    )
-
-    st.markdown("### Experimental Controls")
-
-    st.write(
-        "For fair comparison, use the same dataset, "
-        "population size, generation count and seed "
-        "while changing crossover and mutation rates."
-    )
-
-    st.warning(
-        "This implementation permits repeated programs "
-        "across time slots. Additional scheduling "
-        "constraints must be implemented if required "
-        "by the original Week 4 tutorial."
-    )
-
-
-# ==========================================
-# FOOTER
-# ==========================================
-
-st.divider()
-
-st.caption(
-    "TV Scheduling Optimizer | "
-    "JIE42903 Evolutionary Computing | "
-    "Genetic Algorithm Dashboard"
-)
+with methodology:
+    st.subheader("How the GA works")
+    st.markdown("""1. **Encoding:** Each chromosome has 18 genes, one program per hourly slot. Programs can repeat.\n2. **Fitness:** Sum of the rating for the selected program at each slot. Higher is better.\n3. **Selection:** Tournament selection (three sampled candidates).\n4. **Crossover:** Single-point crossover with probability CO_R per parent pair.\n5. **Mutation:** With probability MUT_R per offspring, replace one randomly selected program gene with a different program. **This is a per-offspring mutation rate, not a per-bit rate.**\n6. **Elitism:** Preserve the two highest-fitness schedules each generation.\n7. **Output:** Best schedule found and best-so-far fitness across generations.""")
+    st.warning("The provided tutorial and this deployable GA may differ in representation or operators. Verify against the Week 4 tutorial before claiming an exact reproduction.")
+    st.caption("Results are stored in this browser session. Download CSV files before closing or resetting the app.")
