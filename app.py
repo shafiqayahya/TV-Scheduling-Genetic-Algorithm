@@ -300,7 +300,7 @@ with st.sidebar:
 
     co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
 
-    mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=0.1, value=0.2, step=0.01, format='%.2f')
+    mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=1.0, value=0.2, step=0.01, format='%.2f')
 
     generations = st.number_input('Generations', 1, 2000, 100)
 
