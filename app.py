@@ -158,31 +158,6 @@ section[data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
     box-shadow: 0 0 0 1px #F4C7D4 !important;
 }
 
-/* CROSSOVER RATE — HIDE BUILT-IN END LABELS */
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stTickBar"] {
-    display: none !important;
-}
-
-/* CROSSOVER RATE — PERMANENT MIN & MAX VALUES */
-.crossover-range {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: -8px;
-    margin-bottom: 4px;
-    padding: 0 5px;
-    box-sizing: border-box;
-}
-
-.crossover-range span {
-    color: #FFFFFF !important;
-    -webkit-text-fill-color: #FFFFFF !important;
-    font-size: 0.85rem;
-    font-weight: 500;
-    line-height: 1.3;
-}
-
 /* SIDEBAR NUMBER INPUT */
 section[data-testid="stSidebar"] input {
     background-color: #FFF4F7 !important;
@@ -312,14 +287,6 @@ with st.sidebar:
     st.header('GA Control Panel')
 
     co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
-
-    st.markdown(
-        '<div class="crossover-range">'
-        '<span>0.00</span>'
-        '<span>0.95</span>'
-        '</div>',
-        unsafe_allow_html=True
-    )
 
     mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=1.0, value=0.20, step=0.01, format='%.2f')
 
