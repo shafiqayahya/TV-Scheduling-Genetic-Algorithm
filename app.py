@@ -93,7 +93,7 @@ with scheduler:
 with comparison:
     st.subheader('Three-Trial Experiment Comparison')
     trials = st.session_state.trials
-        if not trials:
+    if not trials:
         st.info(
             'Run GA and save up to three trials '
             'in the GA Scheduler tab.'
