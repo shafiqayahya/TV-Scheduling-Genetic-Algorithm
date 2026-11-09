@@ -1,11 +1,7 @@
-
 from pathlib import Path
-
 import pandas as pd
 import streamlit as st
-
 from ga_engine import load_ratings, run_ga
-
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -19,6 +15,7 @@ st.set_page_config(
 )
 
 ROOT = Path(__file__).resolve().parent
+
 MODIFIED = ROOT / "program_ratings_modified.csv"
 ORIGINAL = ROOT / "program_ratings_original.csv"
 
@@ -402,36 +399,20 @@ except Exception as exc:
 # EXPERIMENT CONFIGURATION
 # ============================================================
 
-# Default is the baseline.
-# Trial 1, Trial 2 and Trial 3 are separate experiments.
+# Only Default has fixed parameters.
+# Trial 1, Trial 2 and Trial 3 are user-defined.
 
-EXPERIMENTS = {
-
-    "Default": {
-        "co_r": 0.80,
-        "mut_r": 0.20
-    },
-
-    "Trial 1": {
-        "co_r": 0.85,
-        "mut_r": 0.01
-    },
-
-    "Trial 2": {
-        "co_r": 0.90,
-        "mut_r": 0.03
-    },
-
-    "Trial 3": {
-        "co_r": 0.95,
-        "mut_r": 0.05
-    }
-
-}
-
+DEFAULT_CO_R = 0.80
+DEFAULT_MUT_R = 0.20
 
 EXPERIMENT_ORDER = [
     "Default",
+    "Trial 1",
+    "Trial 2",
+    "Trial 3"
+]
+
+TRIAL_NAMES = [
     "Trial 1",
     "Trial 2",
     "Trial 3"
@@ -448,28 +429,73 @@ seed = 42
 
 
 # ============================================================
-# IDENTIFY EXPERIMENT FROM PARAMETERS
+# HELPER FUNCTIONS
 # ============================================================
 
-def identify_experiment(crossover_rate, mutation_rate):
+def is_default_parameters(co_r, mut_r):
 
-    for experiment_name, parameters in EXPERIMENTS.items():
+    return (
+        abs(float(co_r) - DEFAULT_CO_R) < 1e-9
+        and
+        abs(float(mut_r) - DEFAULT_MUT_R) < 1e-9
+    )
 
-        if (
-            abs(
-                float(crossover_rate)
-                - parameters["co_r"]
-            ) < 1e-9
-            and
-            abs(
-                float(mutation_rate)
-                - parameters["mut_r"]
-            ) < 1e-9
-        ):
 
-            return experiment_name
+def get_next_experiment(saved_experiments):
 
-    return None
+    for name in EXPERIMENT_ORDER:
+
+        if name not in saved_experiments:
+            return name
+
+    return "Trial 3"
+
+
+def get_experiment_status(saved_experiments, name):
+
+    if name in saved_experiments:
+        return "Saved"
+
+    return "Not Saved"
+
+
+def make_parameter_table(saved_experiments):
+
+    rows = []
+
+    for name in EXPERIMENT_ORDER:
+
+        if name == "Default":
+
+            crossover_rate = DEFAULT_CO_R
+            mutation_rate = DEFAULT_MUT_R
+
+        elif name in saved_experiments:
+
+            crossover_rate = saved_experiments[name]["co_r"]
+            mutation_rate = saved_experiments[name]["mut_r"]
+
+        else:
+
+            crossover_rate = None
+            mutation_rate = None
+
+        rows.append({
+
+            "Experiment": name,
+
+            "Crossover Rate (CO_R)": crossover_rate,
+
+            "Mutation Rate (MUT_R)": mutation_rate,
+
+            "Status": get_experiment_status(
+                saved_experiments,
+                name
+            )
+
+        })
+
+    return pd.DataFrame(rows)
 
 
 # ============================================================
@@ -483,18 +509,18 @@ if "current" not in st.session_state:
     st.session_state.current = None
 
 if "co_r_input" not in st.session_state:
-    st.session_state.co_r_input = 0.80
+    st.session_state.co_r_input = DEFAULT_CO_R
 
 if "mut_r_input" not in st.session_state:
-    st.session_state.mut_r_input = 0.20
+    st.session_state.mut_r_input = DEFAULT_MUT_R
 
 
 # ============================================================
-# FIX: COMPATIBILITY WITH PREVIOUS SESSION STATE
+# SESSION STATE COMPATIBILITY
 # ============================================================
 
-# Old app versions did not store the "experiment" key.
-# This section safely updates existing session data.
+# Supports results generated using previous versions of app.py.
+# Old results may not have an "experiment" key.
 
 if st.session_state.current is not None:
 
@@ -502,21 +528,25 @@ if st.session_state.current is not None:
 
     if isinstance(current_data, dict):
 
-        if "experiment" not in current_data:
+        current_data.setdefault(
+            "generations",
+            generations
+        )
 
-            current_data["experiment"] = identify_experiment(
-                current_data.get("co_r", 0.80),
-                current_data.get("mut_r", 0.20)
-            )
+        current_data.setdefault(
+            "population_size",
+            population_size
+        )
 
-        if "generations" not in current_data:
-            current_data["generations"] = generations
+        current_data.setdefault(
+            "seed",
+            seed
+        )
 
-        if "population_size" not in current_data:
-            current_data["population_size"] = population_size
-
-        if "seed" not in current_data:
-            current_data["seed"] = seed
+        current_data.setdefault(
+            "experiment",
+            None
+        )
 
     else:
 
@@ -581,14 +611,9 @@ if run:
                 seed=seed
             )
 
-        experiment_name = identify_experiment(
-            co_r,
-            mut_r
-        )
-
         st.session_state.current = {
 
-            "experiment": experiment_name,
+            "experiment": None,
 
             "rows": rows,
 
@@ -694,8 +719,9 @@ with scheduler:
 
         st.markdown(
             '<div class="burgundy-info">'
-            'Start with Default (CO_R=0.80, MUT_R=0.20), '
-            'then run Trial 1, Trial 2 and Trial 3.'
+            'Start with Default (CO_R=0.80, MUT_R=0.20). '
+            'Then choose your own crossover and mutation rates '
+            'for Trial 1, Trial 2 and Trial 3.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -703,20 +729,22 @@ with scheduler:
     else:
 
         # ====================================================
-        # FIX: SAFE EXPERIMENT IDENTIFICATION
+        # CURRENT PARAMETER INFORMATION
         # ====================================================
 
-        experiment_label = (
-            current.get("experiment")
-            or identify_experiment(
-                current.get("co_r", 0.80),
-                current.get("mut_r", 0.20)
-            )
-            or "Custom Parameters"
-        )
+        if is_default_parameters(
+            current["co_r"],
+            current["mut_r"]
+        ):
+
+            experiment_label = "Default Parameters"
+
+        else:
+
+            experiment_label = "Custom Parameters"
 
         st.caption(
-            f"Experiment={experiment_label} · "
+            f"Parameter Type={experiment_label} · "
             f"CO_R={current['co_r']:.2f} · "
             f"MUT_R={current['mut_r']:.2f} · "
             f"Generations={current['generations']} · "
@@ -765,87 +793,155 @@ with scheduler:
             )
 
         # ====================================================
-        # DOWNLOAD AND SAVE
+        # DOWNLOAD SCHEDULE
         # ====================================================
 
-        left, right = st.columns(2)
+        st.download_button(
+            "⬇ Download Schedule CSV",
+            data=schedule_df.to_csv(index=False),
+            file_name="generated_schedule.csv",
+            mime="text/csv",
+            width="stretch"
+        )
 
-        with left:
+        # ====================================================
+        # SAVE EXPERIMENT
+        # ====================================================
 
-            st.download_button(
-                "⬇ Download Schedule CSV",
-                data=schedule_df.to_csv(index=False),
-                file_name="generated_schedule.csv",
-                mime="text/csv",
-                width="stretch"
+        st.subheader("Save Experiment for Comparison")
+
+        saved_experiments = st.session_state.experiments
+
+        suggested_experiment = get_next_experiment(
+            saved_experiments
+        )
+
+        experiment_to_save = st.selectbox(
+            "Select Experiment",
+            options=EXPERIMENT_ORDER,
+            index=EXPERIMENT_ORDER.index(
+                suggested_experiment
+            ),
+            help=(
+                "Choose Default for baseline parameters, "
+                "or Trial 1, Trial 2 or Trial 3 "
+                "for your own experiment parameters."
+            )
+        )
+
+        # ====================================================
+        # VALIDATE EXPERIMENT BEFORE SAVING
+        # ====================================================
+
+        current_is_default = is_default_parameters(
+            current["co_r"],
+            current["mut_r"]
+        )
+
+        parameters_match_sidebar = (
+            abs(float(current["co_r"]) - float(co_r)) < 1e-9
+            and
+            abs(float(current["mut_r"]) - float(mut_r)) < 1e-9
+        )
+
+        if not parameters_match_sidebar:
+
+            st.warning(
+                "The sidebar parameters have changed since "
+                "the current schedule was generated. "
+                "Click Run Genetic Algorithm again "
+                "before saving."
             )
 
-        with right:
+        if experiment_to_save == "Default":
 
-            if st.button(
-                "💾 Save Experiment for Comparison",
-                width="stretch"
-            ):
+            st.caption(
+                "Default requires CO_R=0.80 and MUT_R=0.20."
+            )
 
-                # Always identify from the actual GA parameters.
-                # This also works with results from older sessions.
+        else:
 
-                experiment_name = identify_experiment(
-                    current["co_r"],
-                    current["mut_r"]
+            st.caption(
+                f"{experiment_to_save} will use "
+                f"CO_R={current['co_r']:.2f} and "
+                f"MUT_R={current['mut_r']:.2f}."
+            )
+
+        if st.button(
+            "💾 Save Experiment",
+            width="stretch"
+        ):
+
+            if not parameters_match_sidebar:
+
+                st.warning(
+                    "Please run the Genetic Algorithm again "
+                    "using the current sidebar parameters "
+                    "before saving."
                 )
 
-                if experiment_name is None:
+            elif (
+                experiment_to_save == "Default"
+                and not current_is_default
+            ):
 
-                    st.warning(
-                        "These parameters do not match Default, "
-                        "Trial 1, Trial 2 or Trial 3. "
-                        "Use the experiment values shown below "
-                        "before saving."
-                    )
+                st.warning(
+                    "Default must use CO_R=0.80 "
+                    "and MUT_R=0.20. "
+                    "Please run the GA with default "
+                    "parameters before saving Default."
+                )
 
-                else:
+            elif (
+                experiment_to_save in TRIAL_NAMES
+                and "Default" not in saved_experiments
+            ):
 
-                    st.session_state.experiments[
-                        experiment_name
-                    ] = {
-                        **current,
-                        "experiment": experiment_name
-                    }
+                st.warning(
+                    "Please save the Default experiment "
+                    "before saving Trial 1, Trial 2 "
+                    "or Trial 3."
+                )
 
-                    st.success(
-                        f"{experiment_name} saved successfully."
-                    )
+            elif (
+                experiment_to_save in TRIAL_NAMES
+                and current_is_default
+            ):
 
-                    st.rerun()
+                st.warning(
+                    "Please change CO_R or MUT_R "
+                    "from the default values, "
+                    "run the GA again, "
+                    "and save the result as a trial."
+                )
+
+            else:
+
+                st.session_state.experiments[
+                    experiment_to_save
+                ] = {
+
+                    **current,
+
+                    "experiment": experiment_to_save
+
+                }
+
+                st.success(
+                    f"{experiment_to_save} saved successfully."
+                )
+
+                st.rerun()
 
     # ========================================================
-    # EXPERIMENT PARAMETER REFERENCE
+    # EXPERIMENT PARAMETER TABLE
     # ========================================================
 
     st.subheader("Experiment Parameters")
 
-    parameter_df = pd.DataFrame([
-
-        {
-
-            "Experiment": name,
-
-            "Crossover Rate (CO_R)": values["co_r"],
-
-            "Mutation Rate (MUT_R)": values["mut_r"],
-
-            "Status": (
-                "Saved"
-                if name in st.session_state.experiments
-                else "Not Saved"
-            )
-
-        }
-
-        for name, values in EXPERIMENTS.items()
-
-    ])
+    parameter_df = make_parameter_table(
+        st.session_state.experiments
+    )
 
     st.dataframe(
         parameter_df,
@@ -867,8 +963,12 @@ with scheduler:
     )
 
     st.caption(
+        "Default uses fixed parameters (0.80, 0.20). "
+        "Trial 1, Trial 2 and Trial 3 use parameters "
+        "selected by the user. "
         "All experiments use the modified CSV dataset, "
-        "100 generations, population size 50 and random seed 42."
+        "100 generations, population size 50 "
+        "and random seed 42."
     )
 
 
@@ -889,7 +989,8 @@ with comparison:
         st.markdown(
             '<div class="burgundy-info">'
             'Run and save the Default experiment first. '
-            'Then save Trial 1, Trial 2 and Trial 3.'
+            'Then generate and save Trial 1, '
+            'Trial 2 and Trial 3 using your own parameters.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -994,9 +1095,7 @@ with comparison:
         # FITNESS COMPARISON
         # ====================================================
 
-        st.subheader(
-            "Fitness Comparison"
-        )
+        st.subheader("Fitness Comparison")
 
         fitness_df = comparison_df[
             [
