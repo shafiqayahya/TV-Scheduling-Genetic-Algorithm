@@ -25,7 +25,7 @@ ORIGINAL = ROOT / "program_ratings_original.csv"
 
 
 # ============================================================
-# CUSTOM CSS
+# CUSTOM CSS - BURGUNDY ROSE THEME
 # ============================================================
 
 st.markdown("""
@@ -102,7 +102,8 @@ section[data-testid="stSidebar"] {
 [data-testid="stSidebarCollapseButton"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarNavCollapseButton"],
-section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] button,
+section[data-testid="stSidebar"]
+[data-testid="stSidebarHeader"] button,
 button[aria-label="Close sidebar"],
 button[aria-label="Open sidebar"] {
     display: none !important;
@@ -110,7 +111,8 @@ button[aria-label="Open sidebar"] {
 
 /* REMOVE SIDEBAR HEADER SPACE */
 
-section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
+section[data-testid="stSidebar"]
+[data-testid="stSidebarHeader"] {
     min-height: 0 !important;
     height: 0 !important;
     padding: 0 !important;
@@ -119,12 +121,14 @@ section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
 
 /* SIDEBAR PADDING */
 
-section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+section[data-testid="stSidebar"]
+[data-testid="stSidebarUserContent"] {
     padding: 2rem 1.35rem 2rem 1.35rem !important;
     box-sizing: border-box !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+section[data-testid="stSidebar"]
+[data-testid="stSidebarContent"] {
     padding-top: 0 !important;
 }
 
@@ -148,13 +152,15 @@ section[data-testid="stSidebar"] h3 {
 
 section[data-testid="stSidebar"] p,
 section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+section[data-testid="stSidebar"]
+[data-testid="stWidgetLabel"] p {
     color: white !important;
 }
 
 /* SIDEBAR SPACING */
 
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+section[data-testid="stSidebar"]
+[data-testid="stVerticalBlock"] {
     gap: 1.5rem !important;
 }
 
@@ -162,13 +168,16 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
 
 @media (min-width: 768px) and (min-height: 650px) {
 
-    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+    section[data-testid="stSidebar"]
+    [data-testid="stSidebarUserContent"] {
         min-height: 100dvh !important;
         display: flex !important;
         flex-direction: column !important;
     }
 
-    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] {
+    section[data-testid="stSidebar"]
+    [data-testid="stSidebarUserContent"]
+    > [data-testid="stVerticalBlock"] {
         flex: 1 1 auto !important;
         min-height: 0 !important;
         display: flex !important;
@@ -177,7 +186,9 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
         gap: 1.5rem !important;
     }
 
-    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div > [data-testid="stVerticalBlock"] {
+    section[data-testid="stSidebar"]
+    [data-testid="stSidebarUserContent"]
+    > div > [data-testid="stVerticalBlock"] {
         flex: 1 1 auto !important;
         display: flex !important;
         flex-direction: column !important;
@@ -190,72 +201,92 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
 
 @media (max-width: 767px), (max-height: 649px) {
 
-    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+    section[data-testid="stSidebar"]
+    [data-testid="stSidebarUserContent"] {
         min-height: auto !important;
         padding: 1.5rem 1.35rem 1.75rem 1.35rem !important;
     }
 
-    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+    section[data-testid="stSidebar"]
+    [data-testid="stVerticalBlock"] {
         gap: 1.2rem !important;
     }
 }
 
 /* INPUT LABELS */
 
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
+section[data-testid="stSidebar"]
+[data-testid="stWidgetLabel"] {
     margin-bottom: 8px !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+section[data-testid="stSidebar"]
+[data-testid="stWidgetLabel"] p {
     font-size: 0.88rem !important;
     font-weight: 600 !important;
     line-height: 1.35 !important;
 }
 
-/* SLIDER */
+/* ============================================================
+   SIDEBAR SLIDERS - BURGUNDY ROSE
+   Applies to both CO_R and MUT_R
+   ============================================================ */
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] {
-    accent-color: #FFF4F7 !important;
+section[data-testid="stSidebar"]
+[data-testid="stSlider"] {
+    accent-color: #BE365A !important;
     padding-bottom: 0 !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] {
-    --slider-color: #FFF4F7;
+section[data-testid="stSidebar"]
+[data-testid="stSlider"]
+[data-baseweb="slider"] {
+    --slider-color: #BE365A;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrack"],
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrackFill"] {
-    background: #FFF4F7 !important;
+/* Slider track */
+
+section[data-testid="stSidebar"]
+[data-testid="stSlider"]
+[data-testid="stSliderTrack"] {
+    background: #D77A96 !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
-    background: #FFF4F7 !important;
-    border: 2px solid #FFF4F7 !important;
+/* Selected slider track */
+
+section[data-testid="stSidebar"]
+[data-testid="stSlider"]
+[data-testid="stSliderTrackFill"] {
+    background: #BE365A !important;
+}
+
+/* Burgundy Rose circular handle */
+
+section[data-testid="stSidebar"]
+[data-testid="stSlider"]
+[role="slider"] {
+    background: #881337 !important;
+    border: 2px solid #BE365A !important;
     box-shadow: 0 0 0 1px #F4C7D4 !important;
 }
 
-/* NUMBER INPUT */
+/* Slider labels and values */
 
-section[data-testid="stSidebar"] input {
-    background-color: #FFF4F7 !important;
-    color: #64152D !important;
-    -webkit-text-fill-color: #64152D !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stNumberInput"] [data-baseweb="input"] {
-    min-height: 46px !important;
-    border-radius: 10px !important;
-    overflow: hidden;
-}
-
-section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
-    background: #FFE5EC !important;
-    color: #64152D !important;
+section[data-testid="stSidebar"]
+[data-testid="stSlider"] p,
+section[data-testid="stSidebar"]
+[data-testid="stSlider"] span,
+section[data-testid="stSidebar"]
+[data-testid="stSlider"]
+[data-testid="stTickBar"] {
+    color: #FFF4F7 !important;
+    -webkit-text-fill-color: #FFF4F7 !important;
 }
 
 /* RUN GA BUTTON */
 
-section[data-testid="stSidebar"] .stButton button[kind="primary"] {
+section[data-testid="stSidebar"]
+.stButton button[kind="primary"] {
     background: #FFF4F7 !important;
     border: 1px solid #FFF4F7 !important;
     color: #64152D !important;
@@ -267,25 +298,30 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"] {
     margin-top: 0 !important;
 }
 
-section[data-testid="stSidebar"] .stButton button[kind="primary"] p,
-section[data-testid="stSidebar"] .stButton button[kind="primary"] span {
+section[data-testid="stSidebar"]
+.stButton button[kind="primary"] p,
+section[data-testid="stSidebar"]
+.stButton button[kind="primary"] span {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
 }
 
-section[data-testid="stSidebar"] .stButton button[kind="primary"] svg {
+section[data-testid="stSidebar"]
+.stButton button[kind="primary"] svg {
     color: #64152D !important;
     fill: #64152D !important;
 }
 
-section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
+section[data-testid="stSidebar"]
+.stButton button[kind="primary"]:hover {
     background: #FFE5EC !important;
     border-color: #F4C7D4 !important;
 }
 
 /* SIDEBAR METRIC */
 
-section[data-testid="stSidebar"] [data-testid="stMetric"] {
+section[data-testid="stSidebar"]
+[data-testid="stMetric"] {
     background: #FFF4F7 !important;
     border: 1px solid #F4C7D4 !important;
     padding: 20px 17px !important;
@@ -293,18 +329,23 @@ section[data-testid="stSidebar"] [data-testid="stMetric"] {
     min-height: 110px !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stMetricLabel"] p,
-section[data-testid="stSidebar"] [data-testid="stMetricValue"],
-section[data-testid="stSidebar"] [data-testid="stMetricValue"] > div {
+section[data-testid="stSidebar"]
+[data-testid="stMetricLabel"] p,
+section[data-testid="stSidebar"]
+[data-testid="stMetricValue"],
+section[data-testid="stSidebar"]
+[data-testid="stMetricValue"] > div {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stMetricLabel"] {
+section[data-testid="stSidebar"]
+[data-testid="stMetricLabel"] {
     margin-bottom: 5px !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
+section[data-testid="stSidebar"]
+[data-testid="stMetricValue"] {
     font-size: 1.8rem !important;
     font-weight: 600 !important;
 }
@@ -379,23 +420,16 @@ st.markdown(
 # ============================================================
 
 if not MODIFIED.is_file():
-
     st.error(
         "Missing program_ratings_modified.csv. "
         "Add this file to the same folder as app.py."
     )
-
     st.stop()
 
-
 try:
-
     ratings, hours = load_ratings(MODIFIED)
-
 except Exception as exc:
-
     st.error(f"Could not load ratings CSV: {exc}")
-
     st.stop()
 
 
@@ -429,7 +463,6 @@ SEED = 42
 # ============================================================
 
 def is_default_parameters(co_r, mut_r):
-
     return (
         abs(float(co_r) - DEFAULT_CO_R) < 1e-9
         and
@@ -438,69 +471,47 @@ def is_default_parameters(co_r, mut_r):
 
 
 def get_next_experiment(saved_experiments):
-
     for name in EXPERIMENT_ORDER:
-
         if name not in saved_experiments:
             return name
-
     return None
 
 
 def get_parameter_table(saved_experiments):
-
     table_rows = []
 
     for name in EXPERIMENT_ORDER:
 
         if name == "Default":
-
             crossover_rate = DEFAULT_CO_R
             mutation_rate = DEFAULT_MUT_R
 
         elif name in saved_experiments:
-
             crossover_rate = saved_experiments[name]["co_r"]
             mutation_rate = saved_experiments[name]["mut_r"]
 
         else:
-
             crossover_rate = None
             mutation_rate = None
 
         table_rows.append({
-
             "Experiment": name,
-
             "Crossover Rate (CO_R)": crossover_rate,
-
             "Mutation Rate (MUT_R)": mutation_rate,
-
             "Status": (
                 "Saved"
                 if name in saved_experiments
                 else "Not Saved"
             )
-
         })
 
     return pd.DataFrame(table_rows)
 
 
 def build_performance_summary(saved_experiments):
-
     """
-    Default is treated only as a baseline.
-
-    The best experimental trial is selected from
-    Trial 1, Trial 2 and Trial 3 only.
-
-    Handles:
-    - One best trial
-    - Multiple trials tied for best fitness
-    - Trial fitness equal to baseline
-    - Trial fitness lower than baseline
-    - Trial fitness higher than baseline
+    Default is the baseline only.
+    Best trial is selected from Trial 1-3.
     """
 
     baseline_score = float(
@@ -522,15 +533,12 @@ def build_performance_summary(saved_experiments):
     ]
 
     if len(best_trials) == 1:
-
         trial_description = (
             f"{best_trials[0]} achieved the highest fitness "
             f"among the experimental trials "
             f"({best_trial_score:.2f})"
         )
-
     else:
-
         trial_description = (
             f"{', '.join(best_trials)} achieved the same "
             f"highest fitness among the experimental trials "
@@ -538,27 +546,22 @@ def build_performance_summary(saved_experiments):
         )
 
     if abs(best_trial_score - baseline_score) < 1e-9:
-
         performance_description = (
             "matching the baseline performance."
         )
 
     elif best_trial_score < baseline_score:
-
         difference = baseline_score - best_trial_score
-
         performance_description = (
-            f"which is {difference:.2f} below the baseline "
-            "fitness."
+            f"which is {difference:.2f} below "
+            "the baseline fitness."
         )
 
     else:
-
         difference = best_trial_score - baseline_score
-
         performance_description = (
-            f"which is {difference:.2f} above the baseline "
-            "fitness."
+            f"which is {difference:.2f} above "
+            "the baseline fitness."
         )
 
     return (
@@ -593,67 +596,76 @@ if "run_counter" not in st.session_state:
 # SESSION STATE COMPATIBILITY
 # ============================================================
 
-# Older app versions may store current results without
-# the "experiment" or "run_id" fields.
-
 if st.session_state.current is not None:
 
     if isinstance(st.session_state.current, dict):
 
         st.session_state.current.setdefault(
-            "experiment",
-            None
+            "experiment", None
         )
 
         st.session_state.current.setdefault(
-            "generations",
-            GENERATIONS
+            "generations", GENERATIONS
         )
 
         st.session_state.current.setdefault(
-            "population_size",
-            POPULATION_SIZE
+            "population_size", POPULATION_SIZE
         )
 
         st.session_state.current.setdefault(
-            "seed",
-            SEED
+            "seed", SEED
         )
 
         st.session_state.current.setdefault(
-            "run_id",
-            None
+            "run_id", None
         )
 
     else:
-
         st.session_state.current = None
 
 
 # ============================================================
-# SIDEBAR
+# SIDEBAR - GA CONTROL PANEL
 # ============================================================
 
 with st.sidebar:
 
     st.header("GA Control Panel")
 
+    # --------------------------------------------------------
+    # CROSSOVER RATE SLIDER
+    # --------------------------------------------------------
+
     co_r = st.slider(
         "Crossover Rate (CO_R)",
-        min_value=0.0,
+        min_value=0.00,
         max_value=0.95,
         step=0.01,
-        key="co_r_input"
+        key="co_r_input",
+        format="%.2f"
     )
 
-    mut_r = st.number_input(
+    # --------------------------------------------------------
+    # MUTATION RATE SLIDER
+    # --------------------------------------------------------
+
+    mut_r = st.slider(
         "Mutation Rate (MUT_R)",
-        min_value=0.0,
-        max_value=1.0,
+        min_value=0.00,
+        max_value=1.00,
         step=0.01,
+        key="mut_r_input",
         format="%.2f",
-        key="mut_r_input"
+        help=(
+            "Default MUT_R is 0.20. "
+            "For Trial 1-3, the assignment specifies "
+            "mutation rates between 0.01 and 0.05."
+        )
     )
+
+    # --------------------------------------------------------
+    # RUN GA BUTTON
+    # --------------------------------------------------------
 
     run = st.button(
         "Run Genetic Algorithm",
@@ -661,6 +673,10 @@ with st.sidebar:
         type="primary",
         width="stretch"
     )
+
+    # --------------------------------------------------------
+    # SAVED EXPERIMENTS
+    # --------------------------------------------------------
 
     st.metric(
         "Saved Experiments",
@@ -691,29 +707,17 @@ if run:
         st.session_state.run_counter += 1
 
         st.session_state.current = {
-
             "experiment": None,
-
             "rows": rows,
-
             "score": score,
-
             "upper": upper,
-
             "history": history,
-
             "co_r": co_r,
-
             "mut_r": mut_r,
-
             "generations": GENERATIONS,
-
             "population_size": POPULATION_SIZE,
-
             "seed": SEED,
-
             "run_id": st.session_state.run_counter
-
         }
 
         st.success(
@@ -721,10 +725,7 @@ if run:
         )
 
     except Exception as exc:
-
-        st.error(
-            f"GA execution failed: {exc}"
-        )
+        st.error(f"GA execution failed: {exc}")
 
 
 # ============================================================
@@ -760,15 +761,9 @@ else:
 
     a, b, c = st.columns(3)
 
-    a.metric(
-        "Time Slots",
-        len(hours)
-    )
+    a.metric("Time Slots", len(hours))
 
-    b.metric(
-        "Program Categories",
-        len(ratings)
-    )
+    b.metric("Program Categories", len(ratings))
 
     c.metric(
         "Saved Experiments",
@@ -788,7 +783,7 @@ scheduler, comparison, changes = st.tabs([
 
 
 # ============================================================
-# TAB 1 — GA SCHEDULER
+# TAB 1 - GA SCHEDULER
 # ============================================================
 
 with scheduler:
@@ -800,8 +795,8 @@ with scheduler:
         st.markdown(
             '<div class="burgundy-info">'
             'Start with Default (CO_R=0.80, MUT_R=0.20). '
-            'Then choose your own crossover and mutation rates '
-            'for Trial 1, Trial 2 and Trial 3.'
+            'Then choose your own crossover and mutation '
+            'rates for Trial 1, Trial 2 and Trial 3.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -809,18 +804,15 @@ with scheduler:
     else:
 
         # ====================================================
-        # CURRENT GA PARAMETERS
+        # CURRENT PARAMETERS
         # ====================================================
 
         if is_default_parameters(
             current["co_r"],
             current["mut_r"]
         ):
-
             parameter_type = "Default Parameters"
-
         else:
-
             parameter_type = "Custom Parameters"
 
         st.caption(
@@ -869,7 +861,8 @@ with scheduler:
         else:
 
             st.info(
-                "Fitness convergence history is not available."
+                "Fitness convergence history "
+                "is not available."
             )
 
         # ====================================================
@@ -901,27 +894,30 @@ with scheduler:
 
         if save_clicked:
 
-            saved_experiments = st.session_state.experiments
+            saved_experiments = (
+                st.session_state.experiments
+            )
 
             next_experiment = get_next_experiment(
                 saved_experiments
             )
 
-            # Check that the current GA result was generated
-            # with the parameters presently in the sidebar.
+            # Check sidebar parameters against
+            # the generated schedule.
 
             parameters_match = (
                 abs(
-                    float(current["co_r"]) - float(co_r)
+                    float(current["co_r"])
+                    - float(co_r)
                 ) < 1e-9
                 and
                 abs(
-                    float(current["mut_r"]) - float(mut_r)
+                    float(current["mut_r"])
+                    - float(mut_r)
                 ) < 1e-9
             )
 
-            # Prevent one GA run from being saved as
-            # multiple experiments.
+            # Prevent saving the same GA run twice.
 
             run_id = current.get("run_id")
 
@@ -929,29 +925,29 @@ with scheduler:
                 run_id is not None
                 and any(
                     experiment.get("run_id") == run_id
-                    for experiment in saved_experiments.values()
+                    for experiment
+                    in saved_experiments.values()
                 )
             )
 
-            # Require distinct crossover/mutation combinations
-            # for the three experimental trials.
+            # Prevent duplicate parameter combinations.
 
             duplicate_parameters = any(
-
-                abs(
-                    float(experiment["co_r"])
-                    - float(current["co_r"])
-                ) < 1e-9
-
+                (
+                    abs(
+                        float(experiment["co_r"])
+                        - float(current["co_r"])
+                    ) < 1e-9
+                )
                 and
-
-                abs(
-                    float(experiment["mut_r"])
-                    - float(current["mut_r"])
-                ) < 1e-9
-
-                for experiment in saved_experiments.values()
-
+                (
+                    abs(
+                        float(experiment["mut_r"])
+                        - float(current["mut_r"])
+                    ) < 1e-9
+                )
+                for experiment
+                in saved_experiments.values()
             )
 
             if next_experiment is None:
@@ -967,8 +963,8 @@ with scheduler:
                 st.warning(
                     "The sidebar parameters have changed "
                     "since the current schedule was generated. "
-                    "Please click Run Genetic Algorithm again "
-                    "before saving."
+                    "Please click Run Genetic Algorithm "
+                    "again before saving."
                 )
 
             elif already_saved:
@@ -976,7 +972,8 @@ with scheduler:
                 st.warning(
                     "This GA run has already been saved. "
                     "Change the parameters and run the "
-                    "Genetic Algorithm again for the next trial."
+                    "Genetic Algorithm again for "
+                    "the next trial."
                 )
 
             elif (
@@ -991,7 +988,7 @@ with scheduler:
                     "Default must use CO_R=0.80 "
                     "and MUT_R=0.20. "
                     "Please run the Genetic Algorithm "
-                    "using these default parameters first."
+                    "using these parameters first."
                 )
 
             elif (
@@ -1005,7 +1002,8 @@ with scheduler:
                 st.warning(
                     "Default has already been saved. "
                     "Please change CO_R or MUT_R "
-                    "and run the GA again for the next trial."
+                    "and run the GA again for "
+                    "the next trial."
                 )
 
             elif duplicate_parameters:
@@ -1014,7 +1012,7 @@ with scheduler:
                     "These crossover and mutation rates "
                     "have already been used in a saved "
                     "experiment. Please choose a different "
-                    "parameter combination for the next trial."
+                    "parameter combination."
                 )
 
             else:
@@ -1022,16 +1020,9 @@ with scheduler:
                 st.session_state.experiments[
                     next_experiment
                 ] = {
-
                     **current,
-
                     "experiment": next_experiment
-
                 }
-
-                st.success(
-                    f"{next_experiment} saved successfully."
-                )
 
                 st.rerun()
 
@@ -1050,17 +1041,14 @@ with scheduler:
         width="stretch",
         hide_index=True,
         column_config={
-
             "Crossover Rate (CO_R)":
                 st.column_config.NumberColumn(
                     format="%.2f"
                 ),
-
             "Mutation Rate (MUT_R)":
                 st.column_config.NumberColumn(
                     format="%.2f"
                 )
-
         }
     )
 
@@ -1075,7 +1063,7 @@ with scheduler:
 
 
 # ============================================================
-# TAB 2 — TRIAL COMPARISON
+# TAB 2 - TRIAL COMPARISON
 # ============================================================
 
 with comparison:
@@ -1091,8 +1079,8 @@ with comparison:
         st.markdown(
             '<div class="burgundy-info">'
             'Run and save the Default experiment first. '
-            'Then generate and save Trial 1, '
-            'Trial 2 and Trial 3 using your own parameters.'
+            'Then generate and save Trial 1, Trial 2 '
+            'and Trial 3 using your own parameters.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -1100,11 +1088,12 @@ with comparison:
     else:
 
         st.caption(
-            f"{len(saved_experiments)} of 4 experiments saved."
+            f"{len(saved_experiments)} "
+            "of 4 experiments saved."
         )
 
         # ====================================================
-        # EXPERIMENT SUMMARY
+        # EXPERIMENT RESULTS SUMMARY
         # ====================================================
 
         comparison_rows = []
@@ -1117,30 +1106,21 @@ with comparison:
             experiment = saved_experiments[name]
 
             comparison_rows.append({
-
                 "Experiment": name,
-
                 "Crossover Rate (CO_R)":
                     experiment["co_r"],
-
                 "Mutation Rate (MUT_R)":
                     experiment["mut_r"],
-
                 "Generations":
                     experiment["generations"],
-
                 "Population Size":
                     experiment["population_size"],
-
                 "Random Seed":
                     experiment["seed"],
-
                 "Best Fitness":
                     experiment["score"],
-
                 "Upper Bound":
                     experiment["upper"],
-
                 "Fitness (%)": (
                     100
                     * experiment["score"]
@@ -1148,48 +1128,39 @@ with comparison:
                     if experiment["upper"]
                     else 0
                 )
-
             })
 
         comparison_df = pd.DataFrame(
             comparison_rows
         )
 
-        st.subheader(
-            "Experiment Results Summary"
-        )
+        st.subheader("Experiment Results Summary")
 
         st.dataframe(
             comparison_df,
             width="stretch",
             hide_index=True,
             column_config={
-
                 "Crossover Rate (CO_R)":
                     st.column_config.NumberColumn(
                         format="%.2f"
                     ),
-
                 "Mutation Rate (MUT_R)":
                     st.column_config.NumberColumn(
                         format="%.2f"
                     ),
-
                 "Best Fitness":
                     st.column_config.NumberColumn(
                         format="%.2f"
                     ),
-
                 "Upper Bound":
                     st.column_config.NumberColumn(
                         format="%.2f"
                     ),
-
                 "Fitness (%)":
                     st.column_config.NumberColumn(
                         format="%.1f%%"
                     )
-
             }
         )
 
@@ -1200,13 +1171,8 @@ with comparison:
         st.subheader("Fitness Comparison")
 
         fitness_df = comparison_df[
-            [
-                "Experiment",
-                "Best Fitness"
-            ]
-        ].set_index(
-            "Experiment"
-        )
+            ["Experiment", "Best Fitness"]
+        ].set_index("Experiment")
 
         st.bar_chart(
             fitness_df,
@@ -1239,18 +1205,14 @@ with comparison:
                 continue
 
             fitness_columns = [
-
                 col
-
                 for col in trial_history.columns
-
                 if (
                     col != "Generation"
                     and pd.api.types.is_numeric_dtype(
                         trial_history[col]
                     )
                 )
-
             ]
 
             if fitness_columns:
@@ -1258,10 +1220,7 @@ with comparison:
                 fitness_column = fitness_columns[0]
 
                 trial_history = trial_history[
-                    [
-                        "Generation",
-                        fitness_column
-                    ]
+                    ["Generation", fitness_column]
                 ].rename(
                     columns={
                         fitness_column: name
@@ -1291,8 +1250,8 @@ with comparison:
         else:
 
             st.info(
-                "Fitness convergence history is not available "
-                "for the saved experiments."
+                "Fitness convergence history is "
+                "not available for saved experiments."
             )
 
         # ====================================================
@@ -1348,7 +1307,10 @@ with comparison:
                     ),
                     mime="text/csv",
                     width="stretch",
-                    key=f"download_{name.replace(' ', '_')}"
+                    key=(
+                        f"download_"
+                        f"{name.replace(' ', '_')}"
+                    )
                 )
 
         # ====================================================
@@ -1386,7 +1348,7 @@ with comparison:
 
 
 # ============================================================
-# TAB 3 — RATING CHANGES
+# TAB 3 - RATING CHANGES
 # ============================================================
 
 with changes:
@@ -1398,8 +1360,8 @@ with changes:
         st.markdown(
             '<div class="burgundy-info">'
             'Original ratings CSV is not available. '
-            'Add program_ratings_original.csv to compare '
-            'rating changes.'
+            'Add program_ratings_original.csv '
+            'to compare rating changes.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -1420,24 +1382,22 @@ with changes:
             # VALIDATE DATASET STRUCTURE
             # =================================================
 
-            if (
+            same_structure = (
                 original_df.columns.tolist()
                 == modified_df.columns.tolist()
                 and len(original_df) == len(modified_df)
-            ):
+            )
+
+            if same_structure:
 
                 program_column = original_df.columns[0]
 
                 hour_columns = [
-
                     col
-
                     for col in original_df.columns
-
                     if str(col).strip().lower().startswith(
                         "hour"
                     )
-
                 ]
 
                 if not hour_columns:
@@ -1471,7 +1431,6 @@ with changes:
                         # =====================================
 
                         rating_changes = []
-
                         changed_row_indices = set()
 
                         for row_index in range(
@@ -1506,11 +1465,8 @@ with changes:
                                     pd.isna(original_rate)
                                     or pd.isna(modified_rate)
                                 ):
-
                                     is_changed = True
-
                                 else:
-
                                     is_changed = (
                                         original_rate
                                         != modified_rate
@@ -1523,19 +1479,14 @@ with changes:
                                     )
 
                                     rating_changes.append({
-
                                         "Type of Program":
                                             program_name,
-
                                         "Hour":
                                             hour,
-
                                         "Original Rates":
                                             original_rate,
-
                                         "Modified Rates":
                                             modified_rate
-
                                     })
 
                         changes_df = pd.DataFrame(
@@ -1596,36 +1547,31 @@ with changes:
                                 width="stretch",
                                 hide_index=True,
                                 column_config={
-
                                     "Type of Program":
                                         st.column_config.TextColumn(
                                             "Type of Program"
                                         ),
-
                                     "Hour":
                                         st.column_config.TextColumn(
                                             "Hour"
                                         ),
-
                                     "Original Rates":
                                         st.column_config.NumberColumn(
                                             "Original Rates",
                                             format="%.2f"
                                         ),
-
                                     "Modified Rates":
                                         st.column_config.NumberColumn(
                                             "Modified Rates",
                                             format="%.2f"
                                         )
-
                                 }
                             )
 
                             st.caption(
                                 "Only modified ratings are shown. "
-                                "Each row represents a program and "
-                                "hour with a changed rating."
+                                "Each row represents a program "
+                                "and hour with a changed rating."
                             )
 
                         # =====================================
