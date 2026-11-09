@@ -160,7 +160,7 @@ section[data-testid="stSidebar"]
 
 section[data-testid="stSidebar"]
 [data-testid="stVerticalBlock"] {
-    gap: 2.0 rem !important;
+    gap: 1.0 rem !important;
 }
 
 /* BALANCED SIDEBAR DISTRIBUTION */
