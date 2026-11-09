@@ -259,7 +259,19 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
     margin: 0 !important;
 }
 
-/* ORIGINAL MAIN BUTTON STYLE */
+/* TRIAL COMPARISON TABLE */
+[data-testid="stDataFrame"] {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* TRIAL EXPANDER */
+[data-testid="stExpander"] {
+    border: 1px solid #F4D8E0 !important;
+    border-radius: 12px !important;
+}
+
+/* MAIN BUTTON STYLE */
 .stButton button[kind="primary"] {
     background: #A7234A;
     border-color: #A7234A;
@@ -288,7 +300,7 @@ with st.sidebar:
 
     co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
 
-    mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=0.1, value=0.20, step=0.01, format='%.2f')
+    mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=0.1, value=0.2, step=0.01, format='%.2f')
 
     generations = st.number_input('Generations', 1, 2000, 100)
 
@@ -397,3 +409,212 @@ with comparison:
             '</div>',
             unsafe_allow_html=True
         )
+
+    else:
+        st.caption(f"{len(trials)} of 3 trials saved for comparison.")
+
+        comparison_df = pd.DataFrame([
+            {
+                'Trial': f"Trial {t['trial']}",
+                'Crossover Rate (CO_R)': t['co_r'],
+                'Mutation Rate (MUT_R)': t['mut_r'],
+                'Generations': t['generations'],
+                'Population Size': t['population_size'],
+                'Random Seed': t['seed'],
+                'Best Fitness': t['score'],
+                'Upper Bound': t['upper'],
+                'Fitness (%)': (
+                    100 * t['score'] / t['upper']
+                    if t['upper'] else 0
+                )
+            }
+            for t in trials
+        ])
+
+        st.subheader('Trial Results Summary')
+
+        st.dataframe(
+            comparison_df,
+            width='stretch',
+            hide_index=True,
+            column_config={
+                'Crossover Rate (CO_R)': st.column_config.NumberColumn(format='%.2f'),
+                'Mutation Rate (MUT_R)': st.column_config.NumberColumn(format='%.2f'),
+                'Best Fitness': st.column_config.NumberColumn(format='%.2f'),
+                'Upper Bound': st.column_config.NumberColumn(format='%.2f'),
+                'Fitness (%)': st.column_config.NumberColumn(format='%.1f%%')
+            }
+        )
+
+        st.subheader('Fitness Comparison')
+
+        fitness_df = comparison_df[
+            ['Trial', 'Best Fitness']
+        ].set_index('Trial')
+
+        st.bar_chart(
+            fitness_df,
+            width='stretch',
+            color='#A7234A'
+        )
+
+        st.subheader('Generated Schedule for Each Trial')
+
+        for t in trials:
+            with st.expander(f"Trial {t['trial']} - Generated TV Schedule"):
+
+                st.caption(
+                    f"CO_R={t['co_r']:.2f} · "
+                    f"MUT_R={t['mut_r']:.2f} · "
+                    f"Generations={t['generations']} · "
+                    f"Population={t['population_size']} · "
+                    f"Seed={t['seed']}"
+                )
+
+                st.metric(
+                    'Best Fitness',
+                    f"{t['score']:.2f}"
+                )
+
+                trial_schedule_df = pd.DataFrame(t['rows'])
+
+                st.dataframe(
+                    trial_schedule_df,
+                    width='stretch',
+                    hide_index=True
+                )
+
+                st.download_button(
+                    f"⬇ Download Trial {t['trial']} Schedule",
+                    trial_schedule_df.to_csv(index=False),
+                    f"trial_{t['trial']}_schedule.csv",
+                    'text/csv',
+                    width='stretch',
+                    key=f"download_trial_{t['trial']}"
+                )
+
+        if len(trials) == 3:
+            best_trial = max(trials, key=lambda t: t['score'])
+
+            st.markdown(
+                '<div class="burgundy-info">'
+                f"All three trials completed. "
+                f"Trial {best_trial['trial']} achieved the highest fitness "
+                f"of {best_trial['score']:.2f}."
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+        if st.button('Clear Saved Trials', width='stretch'):
+            st.session_state.trials = []
+            st.rerun()
+
+with changes:
+    st.subheader('Rating Changes')
+
+    if not ORIGINAL.is_file():
+        st.markdown(
+            '<div class="burgundy-info">'
+            'Original ratings CSV is not available. '
+            'Add program_ratings_original.csv to compare rating changes.'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+    else:
+        try:
+            original_df = pd.read_csv(ORIGINAL)
+            modified_df = pd.read_csv(MODIFIED)
+
+            st.subheader('Original Program Ratings')
+
+            st.dataframe(
+                original_df,
+                width='stretch',
+                hide_index=True
+            )
+
+            st.subheader('Modified Program Ratings')
+
+            st.dataframe(
+                modified_df,
+                width='stretch',
+                hide_index=True
+            )
+
+            st.subheader('Rating Changes Comparison')
+
+            if (
+                original_df.columns.tolist() == modified_df.columns.tolist()
+                and len(original_df) == len(modified_df)
+            ):
+                original_numeric = original_df.select_dtypes(
+                    include='number'
+                ).columns.tolist()
+
+                modified_numeric = modified_df.select_dtypes(
+                    include='number'
+                ).columns.tolist()
+
+                numeric_columns = [
+                    col for col in original_numeric
+                    if col in modified_numeric
+                ]
+
+                if numeric_columns:
+                    comparison_changes = modified_df.copy()
+
+                    for col in numeric_columns:
+                        comparison_changes[f'{col} Change'] = (
+                            modified_df[col] - original_df[col]
+                        )
+
+                    st.dataframe(
+                        comparison_changes,
+                        width='stretch',
+                        hide_index=True
+                    )
+
+                    changed_cells = (
+                        original_df.ne(modified_df)
+                        & original_df.notna().combine(
+                            modified_df.notna(),
+                            lambda a, b: a or b
+                        )
+                    )
+
+                    changed_rows = changed_cells.any(axis=1).sum()
+
+                    a,b = st.columns(2)
+
+                    a.metric(
+                        'Total Records',
+                        len(modified_df)
+                    )
+
+                    b.metric(
+                        'Rows with Changes',
+                        int(changed_rows)
+                    )
+
+                    st.caption(
+                        'Rating differences are calculated as '
+                        'Modified Rating - Original Rating. '
+                        'Rows are compared in their existing order.'
+                    )
+
+                else:
+                    st.info(
+                        'No matching numeric rating columns were found '
+                        'for calculating rating differences.'
+                    )
+
+            else:
+                st.warning(
+                    'Original and modified CSV files have different '
+                    'columns or row counts. Both datasets are displayed '
+                    'above, but automatic row-by-row comparison is not available.'
+                )
+
+        except Exception as exc:
+            st.error(f'Could not compare rating CSV files: {exc}')
