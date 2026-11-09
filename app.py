@@ -68,18 +68,32 @@ section[data-testid="stSidebar"] {
     }
 }
 
+/* HIDE SIDEBAR OPEN & CLOSE BUTTONS */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarNavCollapseButton"],
+section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] button,
+button[aria-label="Close sidebar"],
+button[aria-label="Open sidebar"] {
+    display: none !important;
+}
+
+/* REMOVE SIDEBAR HEADER EMPTY SPACE */
+section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
+    min-height: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
 /* SIDEBAR CONTENT ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
-    padding: 0rem 1.35rem 1.25rem 1.35rem !important;
+    padding: 1.15rem 1.35rem 1.25rem 1.35rem !important;
 }
 
 /* MOVE SIDEBAR CONTENT UP */
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-    padding-top: 0rem !important;
-}
-
-section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div {
-    margin-top: -35px !important;
+    padding-top: 0 !important;
 }
 
 /* SIDEBAR HEADING — CENTER */
@@ -92,8 +106,8 @@ section[data-testid="stSidebar"] h3 {
     font-weight: 700 !important;
     letter-spacing: 0.3px;
     padding-bottom: 12px !important;
-    margin-top: 0px !important;
-    margin-bottom: 10px !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
     border-bottom: 1px solid rgba(255,255,255,0.25);
 }
 
@@ -106,7 +120,7 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
 
 /* CONSISTENT SIDEBAR WIDGET SPACING */
 section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    gap: 0.85rem !important;
+    gap: 0.9rem !important;
 }
 
 /* INPUT LABEL ALIGNMENT */
