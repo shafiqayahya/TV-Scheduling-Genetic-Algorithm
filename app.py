@@ -1,9 +1,15 @@
+
 from pathlib import Path
 import pandas as pd
 import streamlit as st
 from ga_engine import load_ratings, run_ga
 
-st.set_page_config(page_title='TV Scheduling | Genetic Algorithm', page_icon='📺', layout='wide', initial_sidebar_state='expanded')
+st.set_page_config(
+    page_title='TV Scheduling | Genetic Algorithm',
+    page_icon='📺',
+    layout='wide',
+    initial_sidebar_state='expanded'
+)
 
 ROOT = Path(__file__).resolve().parent
 MODIFIED = ROOT / 'program_ratings_modified.csv'
@@ -87,7 +93,8 @@ section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
 
 /* SIDEBAR CONTENT ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
-    padding: 1.15rem 1.35rem 1.25rem 1.35rem !important;
+    padding: 2rem 1.35rem 2rem 1.35rem !important;
+    box-sizing: border-box !important;
 }
 
 /* MOVE SIDEBAR CONTENT UP */
@@ -104,9 +111,9 @@ section[data-testid="stSidebar"] h3 {
     font-size: 1.28rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.3px;
-    padding-bottom: 12px !important;
+    padding-bottom: 14px !important;
     margin-top: 0 !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 0 !important;
     border-bottom: 1px solid rgba(255,255,255,0.25);
 }
 
@@ -119,12 +126,52 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
 
 /* CONSISTENT SIDEBAR WIDGET SPACING */
 section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    gap: 0.9rem !important;
+    gap: 1.5rem !important;
+}
+
+/* BALANCED SIDEBAR HEIGHT AND DISTRIBUTION */
+@media (min-width: 768px) and (min-height: 650px) {
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+        min-height: 100dvh !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > [data-testid="stVerticalBlock"] {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        gap: 1.5rem !important;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div > [data-testid="stVerticalBlock"] {
+        flex: 1 1 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        gap: 1.5rem !important;
+    }
+}
+
+/* COMPACT LAYOUT FOR SMALL SCREENS */
+@media (max-width: 767px), (max-height: 649px) {
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+        min-height: auto !important;
+        padding: 1.5rem 1.35rem 1.75rem 1.35rem !important;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 1.2rem !important;
+    }
 }
 
 /* INPUT LABEL ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
@@ -166,7 +213,7 @@ section[data-testid="stSidebar"] input {
 
 /* NUMBER INPUT — CONSISTENT HEIGHT */
 section[data-testid="stSidebar"] [data-testid="stNumberInput"] [data-baseweb="input"] {
-    min-height: 42px !important;
+    min-height: 46px !important;
     border-radius: 10px !important;
     overflow: hidden;
 }
@@ -185,9 +232,9 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"] {
     border-radius: 11px !important;
     font-weight: 700 !important;
     width: 100% !important;
-    min-height: 45px !important;
+    min-height: 52px !important;
     font-size: 0.91rem !important;
-    margin-top: 4px !important;
+    margin-top: 0 !important;
 }
 
 section[data-testid="stSidebar"] .stButton button[kind="primary"] p,
@@ -211,9 +258,9 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
 section[data-testid="stSidebar"] [data-testid="stMetric"] {
     background: #FFF4F7 !important;
     border: 1px solid #F4C7D4 !important;
-    padding: 14px 17px !important;
+    padding: 20px 17px !important;
     border-radius: 12px !important;
-    min-height: 92px !important;
+    min-height: 110px !important;
 }
 
 /* SIDEBAR SAVED TRIALS TEXT AND NUMBER */
@@ -279,10 +326,19 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
 
 </style>''', unsafe_allow_html=True)
 
-st.markdown('<div class="hero"><h1>📺 TV Scheduling Optimizer</h1><p>JIE42903 · Evolutionary Computing · Genetic Algorithm</p></div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="hero">'
+    '<h1>📺 TV Scheduling Optimizer</h1>'
+    '<p>JIE42903 · Evolutionary Computing · Genetic Algorithm</p>'
+    '</div>',
+    unsafe_allow_html=True
+)
 
 if not MODIFIED.is_file():
-    st.error('Missing program_ratings_modified.csv. Add this file to the same GitHub folder as app.py.')
+    st.error(
+        'Missing program_ratings_modified.csv. '
+        'Add this file to the same GitHub folder as app.py.'
+    )
     st.stop()
 
 try:
@@ -302,21 +358,44 @@ seed = 42
 with st.sidebar:
     st.header('GA Control Panel')
 
-    co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
+    co_r = st.slider(
+        'Crossover Rate (CO_R)',
+        0.0, 0.95, 0.80, 0.01
+    )
 
-    mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=1.0, value=0.2, step=0.01, format='%.2f')
+    mut_r = st.number_input(
+        'Mutation Rate (MUT_R)',
+        min_value=0.0,
+        max_value=1.0,
+        value=0.2,
+        step=0.01,
+        format='%.2f'
+    )
 
-    run = st.button('Run Genetic Algorithm', icon=':material/play_arrow:', type='primary', width='stretch')
+    run = st.button(
+        'Run Genetic Algorithm',
+        icon=':material/play_arrow:',
+        type='primary',
+        width='stretch'
+    )
 
-    st.metric('Saved Trials', len(st.session_state.trials))
+    st.metric(
+        'Saved Trials',
+        len(st.session_state.trials)
+    )
 
 if run:
     try:
         with st.spinner('Optimizing schedule...'):
             rows, score, upper, history = run_ga(
-                ratings, hours, crossover_rate=co_r, mutation_rate=mut_r,
-                generations=int(generations), population_size=int(population_size),
-                seed=int(seed))
+                ratings,
+                hours,
+                crossover_rate=co_r,
+                mutation_rate=mut_r,
+                generations=int(generations),
+                population_size=int(population_size),
+                seed=int(seed)
+            )
 
         st.session_state.current = dict(
             rows=rows,
@@ -338,18 +417,36 @@ if run:
 current = st.session_state.get('current')
 
 if current:
-    a,b,c = st.columns(3)
-    a.metric('Best Fitness', f"{current['score']:.2f}")
-    b.metric('Upper Bound', f"{current['upper']:.2f}")
-    c.metric('Fitness / Upper Bound', f"{100*current['score']/current['upper']:.1f}%" if current['upper'] else 'N/A')
+    a, b, c = st.columns(3)
+
+    a.metric(
+        'Best Fitness',
+        f"{current['score']:.2f}"
+    )
+
+    b.metric(
+        'Upper Bound',
+        f"{current['upper']:.2f}"
+    )
+
+    c.metric(
+        'Fitness / Upper Bound',
+        f"{100 * current['score'] / current['upper']:.1f}%"
+        if current['upper'] else 'N/A'
+    )
 
 else:
-    a,b,c = st.columns(3)
+    a, b, c = st.columns(3)
+
     a.metric('Time Slots', len(hours))
     b.metric('Program Categories', len(ratings))
     c.metric('Saved Trials', len(st.session_state.trials))
 
-scheduler, comparison, changes = st.tabs(['GA Scheduler', 'Trial Comparison', 'Rating Changes'])
+scheduler, comparison, changes = st.tabs([
+    'GA Scheduler',
+    'Trial Comparison',
+    'Rating Changes'
+])
 
 with scheduler:
     st.subheader('Generated TV Schedule')
@@ -363,17 +460,30 @@ with scheduler:
         )
 
     else:
-        st.caption(f"CO_R={current['co_r']:.2f} · MUT_R={current['mut_r']:.2f} · Generations={current['generations']} · Population={current['population_size']} · Seed={current['seed']}")
+        st.caption(
+            f"CO_R={current['co_r']:.2f} · "
+            f"MUT_R={current['mut_r']:.2f} · "
+            f"Generations={current['generations']} · "
+            f"Population={current['population_size']} · "
+            f"Seed={current['seed']}"
+        )
 
         schedule_df = pd.DataFrame(current['rows'])
 
-        st.dataframe(schedule_df, width='stretch', hide_index=True)
+        st.dataframe(
+            schedule_df,
+            width='stretch',
+            hide_index=True
+        )
 
         st.subheader('Fitness Convergence')
 
-        st.line_chart(pd.DataFrame(current['history']).set_index('Generation'), width='stretch')
+        st.line_chart(
+            pd.DataFrame(current['history']).set_index('Generation'),
+            width='stretch'
+        )
 
-        left,right = st.columns(2)
+        left, right = st.columns(2)
 
         with left:
             st.download_button(
@@ -385,9 +495,15 @@ with scheduler:
             )
 
         with right:
-            if st.button('💾 Save Trial for Comparison', width='stretch'):
+            if st.button(
+                '💾 Save Trial for Comparison',
+                width='stretch'
+            ):
                 if len(st.session_state.trials) >= 3:
-                    st.warning('Three trials already saved. Clear trials to start again.')
+                    st.warning(
+                        'Three trials already saved. '
+                        'Clear trials to start again.'
+                    )
                 else:
                     st.session_state.trials.append({
                         **current,
@@ -409,7 +525,9 @@ with comparison:
         )
 
     else:
-        st.caption(f"{len(trials)} of 3 trials saved for comparison.")
+        st.caption(
+            f"{len(trials)} of 3 trials saved for comparison."
+        )
 
         comparison_df = pd.DataFrame([
             {
@@ -436,11 +554,16 @@ with comparison:
             width='stretch',
             hide_index=True,
             column_config={
-                'Crossover Rate (CO_R)': st.column_config.NumberColumn(format='%.2f'),
-                'Mutation Rate (MUT_R)': st.column_config.NumberColumn(format='%.2f'),
-                'Best Fitness': st.column_config.NumberColumn(format='%.2f'),
-                'Upper Bound': st.column_config.NumberColumn(format='%.2f'),
-                'Fitness (%)': st.column_config.NumberColumn(format='%.1f%%')
+                'Crossover Rate (CO_R)':
+                    st.column_config.NumberColumn(format='%.2f'),
+                'Mutation Rate (MUT_R)':
+                    st.column_config.NumberColumn(format='%.2f'),
+                'Best Fitness':
+                    st.column_config.NumberColumn(format='%.2f'),
+                'Upper Bound':
+                    st.column_config.NumberColumn(format='%.2f'),
+                'Fitness (%)':
+                    st.column_config.NumberColumn(format='%.1f%%')
             }
         )
 
@@ -459,7 +582,9 @@ with comparison:
         st.subheader('Generated Schedule for Each Trial')
 
         for t in trials:
-            with st.expander(f"Trial {t['trial']} - Generated TV Schedule"):
+            with st.expander(
+                f"Trial {t['trial']} - Generated TV Schedule"
+            ):
 
                 st.caption(
                     f"CO_R={t['co_r']:.2f} · "
@@ -492,7 +617,10 @@ with comparison:
                 )
 
         if len(trials) == 3:
-            best_trial = max(trials, key=lambda t: t['score'])
+            best_trial = max(
+                trials,
+                key=lambda t: t['score']
+            )
 
             st.markdown(
                 '<div class="burgundy-info">'
@@ -503,7 +631,10 @@ with comparison:
                 unsafe_allow_html=True
             )
 
-        if st.button('Clear Saved Trials', width='stretch'):
+        if st.button(
+            'Clear Saved Trials',
+            width='stretch'
+        ):
             st.session_state.trials = []
             st.rerun()
 
@@ -543,7 +674,8 @@ with changes:
             st.subheader('Rating Changes Comparison')
 
             if (
-                original_df.columns.tolist() == modified_df.columns.tolist()
+                original_df.columns.tolist()
+                == modified_df.columns.tolist()
                 and len(original_df) == len(modified_df)
             ):
                 original_numeric = original_df.select_dtypes(
@@ -583,7 +715,7 @@ with changes:
 
                     changed_rows = changed_cells.any(axis=1).sum()
 
-                    a,b = st.columns(2)
+                    a, b = st.columns(2)
 
                     a.metric(
                         'Total Records',
@@ -615,4 +747,6 @@ with changes:
                 )
 
         except Exception as exc:
-            st.error(f'Could not compare rating CSV files: {exc}')
+            st.error(
+                f'Could not compare rating CSV files: {exc}'
+            )
