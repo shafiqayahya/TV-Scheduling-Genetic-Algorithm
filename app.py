@@ -136,29 +136,36 @@ section[data-testid="stSidebar"][aria-expanded="true"] {
     min-width: 290px;
 }
 
+/* MAIN INFORMATION BOX — BURGUNDY GRADIENT & WHITE TEXT */
+.burgundy-info {
+    background: linear-gradient(
+        110deg,
+        #64152D 0%,
+        #881337 58%,
+        #BE365A 100%
+    ) !important;
+    border: 1px solid #881337 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-top: 12px;
+    margin-bottom: 16px;
+    color: #FFFFFF !important;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.burgundy-info p,
+.burgundy-info span {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    margin: 0 !important;
+}
+
 /* ORIGINAL MAIN BUTTON STYLE */
 .stButton button[kind="primary"] {
     background:#A7234A;
     border-color:#A7234A;
     color:white;
-}
-
-/* MAIN INFORMATION BOX — ROSE BURGUNDY */
-div[data-testid="stAlert"] {
-    background-color: #FBE8EE !important;
-    border: 1px solid #F4C7D4 !important;
-    border-radius: 12px !important;
-}
-
-div[data-testid="stAlert"] p,
-div[data-testid="stAlert"] span,
-div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
-    color: #64152D !important;
-    -webkit-text-fill-color: #64152D !important;
-}
-
-div[data-testid="stAlert"] svg {
-    color: #881337 !important;
 }
 </style>''', unsafe_allow_html=True)
 
@@ -217,7 +224,12 @@ scheduler, comparison, changes = st.tabs(['GA Scheduler', 'Trial Comparison', 'R
 with scheduler:
     st.subheader('Generated TV Schedule')
     if current is None:
-        st.info('Set parameters in the sidebar and click Run Genetic Algorithm.')
+        st.markdown(
+            '<div class="burgundy-info">'
+            'Set parameters in the sidebar and click Run Genetic Algorithm.'
+            '</div>',
+            unsafe_allow_html=True
+        )
     else:
         st.caption(f"CO_R={current['co_r']:.2f} · MUT_R={current['mut_r']:.2f} · Generations={current['generations']} · Population={current['population_size']} · Seed={current['seed']}")
         schedule_df = pd.DataFrame(current['rows'])
@@ -239,7 +251,9 @@ with comparison:
     st.subheader('Three-Trial Experiment Comparison')
     trials = st.session_state.trials
     if not trials:
-        st.info(
-            'Run GA and save up to three trials '
-            'in the GA Scheduler tab.'
+        st.markdown(
+            '<div class="burgundy-info">'
+            'Run GA and save up to three trials in the GA Scheduler tab.'
+            '</div>',
+            unsafe_allow_html=True
         )
