@@ -11,7 +11,10 @@ def load_ratings(path):
             raise ValueError("Expected first CSV column: Type of Program")
         if len(columns) < 3 or any(not c.startswith("Hour ") for c in columns[1:]):
             raise ValueError("Expected at least two 'Hour N' columns")
-        hours = [int(column.removeprefix("Hour ")) for column in columns[1:]]
+        try:
+            hours = [int(column.removeprefix("Hour ")) for column in columns[1:]]
+        except ValueError as exc:
+            raise ValueError("Hour columns must contain integer hours") from exc
         if len(set(hours)) != len(hours):
             raise ValueError("Hour columns must be unique")
         ratings = {}
@@ -19,7 +22,10 @@ def load_ratings(path):
             name = (row[columns[0]] or "").strip()
             if not name or name in ratings:
                 raise ValueError("Program names must be non-empty and unique")
-            values = [float(row[column]) for column in columns[1:]]
+            try:
+                values = [float(row[column]) for column in columns[1:]]
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"Invalid rating for program {name}") from exc
             if not all(math.isfinite(v) and v >= 0 for v in values):
                 raise ValueError("Ratings must be finite and non-negative")
             ratings[name] = values
@@ -73,7 +79,7 @@ def run_ga(ratings, hours, crossover_rate=0.8, mutation_rate=0.2,
             else:
                 c1, c2 = p1.copy(), p2.copy()
             for child in (c1, c2):
-                # MUT_R is per offspring: change one program gene if mutation occurs.
+                # Mutation rate is per offspring; one program gene changes on mutation.
                 if rng.random() < mutation_rate:
                     idx = rng.randrange(n)
                     alternatives = [p for p in programs if p != child[idx]]
@@ -83,8 +89,8 @@ def run_ga(ratings, hours, crossover_rate=0.8, mutation_rate=0.2,
         population = next_population
 
     rows = [
-    {"Hour": f"Hour {hour}", "Program": program, "Rating": ratings[program][i]}
-    for i, (hour, program) in enumerate(zip(hours, best))
-]
+        {"Hour": f"Hour {hour}", "Program": program, "Rating": ratings[program][i]}
+        for i, (hour, program) in enumerate(zip(hours, best))
+    ]
     upper_bound = sum(max(values[i] for values in ratings.values()) for i in range(n))
     return rows, best_score, upper_bound, history
