@@ -37,21 +37,38 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
     color: #FFFFFF !important;
 }
 
-/* SIDEBAR SLIDER */
+/* SIDEBAR SLIDER — LIGHT PINK TRACK */
 section[data-testid="stSidebar"] [data-testid="stSlider"] {
-    accent-color: #FFF4F7;
+    accent-color: #FFF4F7 !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
-    background: #FFF4F7 !important;
-    border-color: #FFF4F7 !important;
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] {
+    --slider-color: #FFF4F7;
 }
 
 section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] > div > div {
     background-color: #FFF4F7 !important;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] [data-testid="stSliderTrack"] {
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrack"] {
+    background: #FFF4F7 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrackFill"] {
+    background: #FFF4F7 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
+    background: #FFF4F7 !important;
+    border: 2px solid #FFF4F7 !important;
+    box-shadow: 0 0 0 1px #F4C7D4 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] div[style*="background-color"] {
+    background-color: #FFF4F7 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] div[style*="background:"] {
     background: #FFF4F7 !important;
 }
 
@@ -77,9 +94,15 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"] {
     font-weight: 700;
 }
 
-section[data-testid="stSidebar"] .stButton button[kind="primary"] p {
+section[data-testid="stSidebar"] .stButton button[kind="primary"] p,
+section[data-testid="stSidebar"] .stButton button[kind="primary"] span {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
+}
+
+section[data-testid="stSidebar"] .stButton button[kind="primary"] svg {
+    color: #64152D !important;
+    fill: #64152D !important;
 }
 
 section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
@@ -88,7 +111,8 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
     color: #64152D !important;
 }
 
-section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover p {
+section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover p,
+section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover span {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
 }
@@ -141,7 +165,7 @@ with st.sidebar:
     generations = st.number_input('Generations', 1, 2000, 100)
     population_size = st.number_input('Population Size', 4, 1000, 50)
     seed = st.number_input('Random Seed', 0, 1000000, 42)
-    run = st.button('▶ Run Genetic Algorithm', type='primary', width='stretch')
+    run = st.button('Run Genetic Algorithm', icon=':material/play_arrow:', type='primary', width='stretch')
     st.metric('Saved Trials', len(st.session_state.trials))
 
 if run:
