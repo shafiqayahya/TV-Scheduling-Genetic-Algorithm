@@ -240,7 +240,7 @@ section[data-testid="stSidebar"]
 section[data-testid="stSidebar"]
 [data-testid="stSlider"]
 [data-baseweb="slider"] {
-    --slider-color: #BE365A;
+    --slider-color: #FFF4F7;
 }
 
 /* Slider track */
@@ -248,7 +248,7 @@ section[data-testid="stSidebar"]
 section[data-testid="stSidebar"]
 [data-testid="stSlider"]
 [data-testid="stSliderTrack"] {
-    background: #D77A96 !important;
+    background: #FFF4F7 !important;
 }
 
 /* Selected slider track */
@@ -266,7 +266,7 @@ section[data-testid="stSidebar"]
 [role="slider"] {
     background: #FFF4F7 !important;
     border: 2px solid #BE365A !important;
-    box-shadow: 0 0 0 1px #F4C7D4 !important;
+    box-shadow: 0 0 0 1px #FFF4F7 !important;
 }
 
 /* Slider labels and values */
