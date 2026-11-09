@@ -84,7 +84,7 @@ section[data-testid="stSidebar"] h3 {
     letter-spacing: 0.3px;
     padding-bottom: 12px !important;
     margin-top: 0px !important;
-    margin-bottom: 0px !important;
+    margin-bottom: 10px !important;
     border-bottom: 1px solid rgba(255,255,255,0.25);
 }
 
