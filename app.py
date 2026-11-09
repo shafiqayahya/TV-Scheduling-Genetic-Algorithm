@@ -68,15 +68,6 @@ section[data-testid="stSidebar"] {
     }
 }
 
-/* HIDE SIDEBAR OPEN & CLOSE BUTTONS */
-[data-testid="stSidebarCollapseButton"],
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stSidebarNavCollapseButton"],
-button[aria-label="Close sidebar"],
-button[aria-label="Open sidebar"] {
-    display: none !important;
-}
-
 /* SIDEBAR CONTENT ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
     padding: 0.5rem 1.35rem 1.25rem 1.35rem !important;
@@ -92,7 +83,7 @@ section[data-testid="stSidebar"] h3 {
     font-weight: 700 !important;
     letter-spacing: 0.3px;
     padding-bottom: 12px !important;
-    margin-top: 0 !important;
+    margin-top: 10px !important;
     margin-bottom: 10px !important;
     border-bottom: 1px solid rgba(255,255,255,0.25);
 }
