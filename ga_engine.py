@@ -40,7 +40,7 @@ def fitness(schedule, ratings):
 
 def run_ga(ratings, hours, crossover_rate=0.8, mutation_rate=0.2,
            generations=100, population_size=50, elitism_size=2, seed=42):
-    if not 0 <= crossover_rate <= 0.95 or not 0 <= mutation_rate <= 1:
+    if not 0 <= crossover_rate <= 0.95 or not 0.01 <= mutation_rate <= 0.05:
         raise ValueError("Invalid crossover or mutation rate")
     if population_size < 2 or not 1 <= elitism_size < population_size or generations < 1:
         raise ValueError("Invalid GA configuration")
