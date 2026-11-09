@@ -1,5 +1,6 @@
 
 from pathlib import Path
+from html import escape
 
 import pandas as pd
 import streamlit as st
@@ -412,6 +413,12 @@ EXPERIMENT_ORDER = [
     "Trial 3"
 ]
 
+TRIAL_NAMES = [
+    "Trial 1",
+    "Trial 2",
+    "Trial 3"
+]
+
 GENERATIONS = 100
 POPULATION_SIZE = 50
 SEED = 42
@@ -480,6 +487,88 @@ def get_parameter_table(saved_experiments):
     return pd.DataFrame(table_rows)
 
 
+def build_performance_summary(saved_experiments):
+
+    """
+    Default is treated only as a baseline.
+
+    The best experimental trial is selected from
+    Trial 1, Trial 2 and Trial 3 only.
+
+    Handles:
+    - One best trial
+    - Multiple trials tied for best fitness
+    - Trial fitness equal to baseline
+    - Trial fitness lower than baseline
+    - Trial fitness higher than baseline
+    """
+
+    baseline_score = float(
+        saved_experiments["Default"]["score"]
+    )
+
+    best_trial_score = max(
+        float(saved_experiments[name]["score"])
+        for name in TRIAL_NAMES
+    )
+
+    best_trials = [
+        name
+        for name in TRIAL_NAMES
+        if abs(
+            float(saved_experiments[name]["score"])
+            - best_trial_score
+        ) < 1e-9
+    ]
+
+    if len(best_trials) == 1:
+
+        trial_description = (
+            f"{best_trials[0]} achieved the highest fitness "
+            f"among the experimental trials "
+            f"({best_trial_score:.2f})"
+        )
+
+    else:
+
+        trial_description = (
+            f"{', '.join(best_trials)} achieved the same "
+            f"highest fitness among the experimental trials "
+            f"({best_trial_score:.2f})"
+        )
+
+    if abs(best_trial_score - baseline_score) < 1e-9:
+
+        performance_description = (
+            "matching the baseline performance."
+        )
+
+    elif best_trial_score < baseline_score:
+
+        difference = baseline_score - best_trial_score
+
+        performance_description = (
+            f"which is {difference:.2f} below the baseline "
+            "fitness."
+        )
+
+    else:
+
+        difference = best_trial_score - baseline_score
+
+        performance_description = (
+            f"which is {difference:.2f} above the baseline "
+            "fitness."
+        )
+
+    return (
+        "All four experiments completed. "
+        f"The Default configuration achieved a baseline "
+        f"fitness of {baseline_score:.2f}. "
+        f"{trial_description}, {performance_description}"
+    )
+
+
 # ============================================================
 # SESSION STATE
 # ============================================================
@@ -504,8 +593,8 @@ if "run_counter" not in st.session_state:
 # SESSION STATE COMPATIBILITY
 # ============================================================
 
-# Older app versions may store the current result without
-# experiment and run_id fields.
+# Older app versions may store current results without
+# the "experiment" or "run_id" fields.
 
 if st.session_state.current is not None:
 
@@ -818,8 +907,8 @@ with scheduler:
                 saved_experiments
             )
 
-            # Check whether the displayed result matches
-            # the current sidebar values.
+            # Check that the current GA result was generated
+            # with the parameters presently in the sidebar.
 
             parameters_match = (
                 abs(
@@ -831,8 +920,8 @@ with scheduler:
                 ) < 1e-9
             )
 
-            # Prevent the same GA run from being saved
-            # into multiple experiment slots.
+            # Prevent one GA run from being saved as
+            # multiple experiments.
 
             run_id = current.get("run_id")
 
@@ -844,8 +933,8 @@ with scheduler:
                 )
             )
 
-            # Prevent identical parameter combinations
-            # from being used for multiple experiments.
+            # Require distinct crossover/mutation combinations
+            # for the three experimental trials.
 
             duplicate_parameters = any(
 
@@ -1263,7 +1352,7 @@ with comparison:
                 )
 
         # ====================================================
-        # BEST EXPERIMENT
+        # EXPERIMENT PERFORMANCE SUMMARY
         # ====================================================
 
         if all(
@@ -1271,44 +1360,13 @@ with comparison:
             for name in EXPERIMENT_ORDER
         ):
 
-            best_score = max(
-                saved_experiments[name]["score"]
-                for name in EXPERIMENT_ORDER
+            result_message = build_performance_summary(
+                saved_experiments
             )
-
-            best_names = [
-
-                name
-
-                for name in EXPERIMENT_ORDER
-
-                if abs(
-                    saved_experiments[name]["score"]
-                    - best_score
-                ) < 1e-9
-
-            ]
-
-            if len(best_names) == 1:
-
-                result_message = (
-                    f"{best_names[0]} achieved the highest "
-                    f"fitness of {best_score:.2f}."
-                )
-
-            else:
-
-                result_message = (
-                    f"{', '.join(best_names)} achieved the "
-                    f"same highest fitness of {best_score:.2f}. "
-                    "Compare their convergence histories "
-                    "to evaluate performance further."
-                )
 
             st.markdown(
                 '<div class="burgundy-info">'
-                'All four experiments completed. '
-                + result_message
+                + escape(result_message)
                 + '</div>',
                 unsafe_allow_html=True
             )
