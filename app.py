@@ -27,6 +27,26 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid #A72B50;
 }
 
+/* SIDEBAR — ALWAYS VISIBLE & STATIC */
+@media (min-width: 768px) {
+    section[data-testid="stSidebar"] {
+        min-width: 330px !important;
+        width: 330px !important;
+        flex-shrink: 0 !important;
+        transform: translateX(0) !important;
+        visibility: visible !important;
+    }
+}
+
+/* HIDE SIDEBAR OPEN & CLOSE BUTTONS */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarNavCollapseButton"],
+button[aria-label="Close sidebar"],
+button[aria-label="Open sidebar"] {
+    display: none !important;
+}
+
 /* SIDEBAR TEXT — WHITE */
 section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
@@ -129,11 +149,6 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"],
 section[data-testid="stSidebar"] [data-testid="stMetricValue"] > div {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
-}
-
-/* SIDEBAR DEFAULT EXPANDED WIDTH */
-section[data-testid="stSidebar"][aria-expanded="true"] {
-    min-width: 290px;
 }
 
 /* MAIN INFORMATION BOX — BURGUNDY GRADIENT & WHITE TEXT */
