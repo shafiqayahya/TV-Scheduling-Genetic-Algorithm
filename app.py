@@ -39,7 +39,7 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
 
 /* SIDEBAR SLIDER */
 section[data-testid="stSidebar"] [data-testid="stSlider"] {
-    accent-color: #F9A8C0;
+    accent-color: #FFF4F7;
 }
 
 /* SIDEBAR NUMBER INPUT */
@@ -57,7 +57,7 @@ section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
 
 /* SIDEBAR RUN BUTTON */
 section[data-testid="stSidebar"] .stButton button[kind="primary"] {
-    background: #E65A83 !important;
+    background:#F9A8C0 !important;
     border: 1px solid #F6B3C6 !important;
     color: #FFFFFF !important;
     border-radius: 12px;
