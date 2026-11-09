@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -14,8 +15,66 @@ st.markdown('''<style>
 .hero h1 {color:white!important;margin:0;font-size:2.2rem;}
 .hero p {color:#FFE8EE;margin:8px 0 0;}
 [data-testid="stMetric"] {background:#FFF4F6;border:1px solid #F4D8E0;padding:14px;border-radius:12px;}
-section[data-testid="stSidebar"] {background:#FFF4F6;}
-.stButton button[kind="primary"] {background:#A7234A;border-color:#A7234A;color:white;}
+
+/* SIDEBAR — BURGUNDY & ROSE THEME */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        155deg,
+        #64152D 0%,
+        #881337 56%,
+        #BE365A 100%
+    ) !important;
+    border-right: 1px solid #A72B50;
+}
+
+/* SIDEBAR TEXT — WHITE */
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+    color: #FFFFFF !important;
+}
+
+/* SIDEBAR SLIDER */
+section[data-testid="stSidebar"] [data-testid="stSlider"] {
+    accent-color: #F9A8C0;
+}
+
+/* SIDEBAR NUMBER INPUT */
+section[data-testid="stSidebar"] input {
+    background-color: #FFF4F7 !important;
+    color: #64152D !important;
+    -webkit-text-fill-color: #64152D !important;
+}
+
+/* SIDEBAR NUMBER INPUT BUTTONS */
+section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
+    background: #FFE5EC !important;
+    color: #64152D !important;
+}
+
+/* SIDEBAR RUN BUTTON */
+section[data-testid="stSidebar"] .stButton button[kind="primary"] {
+    background: #E65A83 !important;
+    border: 1px solid #F6B3C6 !important;
+    color: #FFFFFF !important;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
+    background: #A7234A !important;
+    border-color: #FFE0E9 !important;
+}
+
+/* ORIGINAL MAIN BUTTON STYLE */
+.stButton button[kind="primary"] {
+    background:#A7234A;
+    border-color:#A7234A;
+    color:white;
+}
 </style>''', unsafe_allow_html=True)
 
 st.markdown('<div class="hero"><h1>📺 TV Scheduling Optimizer</h1><p>JIE42903 · Evolutionary Computing · Genetic Algorithm</p></div>', unsafe_allow_html=True)
@@ -70,6 +129,7 @@ else:
     c.metric('Saved Trials', len(st.session_state.trials))
 
 scheduler, comparison, changes = st.tabs(['GA Scheduler', 'Trial Comparison', 'Rating Changes'])
+
 with scheduler:
     st.subheader('Generated TV Schedule')
     if current is None:
@@ -90,6 +150,7 @@ with scheduler:
                 else:
                     st.session_state.trials.append({**current, 'trial':len(st.session_state.trials)+1})
                     st.rerun()
+
 with comparison:
     st.subheader('Three-Trial Experiment Comparison')
     trials = st.session_state.trials
