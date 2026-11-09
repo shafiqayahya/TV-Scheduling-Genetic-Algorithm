@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -295,18 +294,17 @@ except Exception as exc:
 if 'trials' not in st.session_state:
     st.session_state.trials = []
 
+# FIXED GA PARAMETERS
+generations = 100
+population_size = 50
+seed = 42
+
 with st.sidebar:
     st.header('GA Control Panel')
 
     co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
 
     mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=1.0, value=0.2, step=0.01, format='%.2f')
-
-    generations = st.number_input('Generations', 1, 2000, 100)
-
-    population_size = st.number_input('Population Size', 4, 1000, 50)
-
-    seed = st.number_input('Random Seed', 0, 1000000, 42)
 
     run = st.button('Run Genetic Algorithm', icon=':material/play_arrow:', type='primary', width='stretch')
 
