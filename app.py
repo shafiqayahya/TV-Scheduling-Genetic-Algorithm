@@ -143,12 +143,11 @@ section[data-testid="stSidebar"][aria-expanded="true"] {
     color:white;
 }
 
-/* GA SCHEDULER & TRIAL COMPARISON INFO BOX */
+/* MAIN INFORMATION BOX — ROSE BURGUNDY */
 div[data-testid="stAlert"] {
     background-color: #FBE8EE !important;
     border: 1px solid #F4C7D4 !important;
     border-radius: 12px !important;
-    color: #64152D !important;
 }
 
 div[data-testid="stAlert"] p,
@@ -156,6 +155,10 @@ div[data-testid="stAlert"] span,
 div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
+}
+
+div[data-testid="stAlert"] svg {
+    color: #881337 !important;
 }
 </style>''', unsafe_allow_html=True)
 
