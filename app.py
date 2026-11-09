@@ -705,15 +705,28 @@ with changes:
                         hide_index=True
                     )
 
+                    # ==========================================
+                    # FIX: COMPARE RATINGS WITHOUT SERIES ERROR
+                    # ==========================================
+
+                    # Compare each cell between both CSV files.
+                    # A cell is considered unchanged if both
+                    # original and modified values are missing.
+
                     changed_cells = (
                         original_df.ne(modified_df)
-                        & original_df.notna().combine(
-                            modified_df.notna(),
-                            lambda a, b: a or b
+                        & (
+                            original_df.notna()
+                            | modified_df.notna()
                         )
                     )
 
-                    changed_rows = changed_cells.any(axis=1).sum()
+                    # Count how many rows contain at least
+                    # one changed value.
+
+                    changed_rows = int(
+                        changed_cells.any(axis=1).sum()
+                    )
 
                     a, b = st.columns(2)
 
@@ -724,7 +737,7 @@ with changes:
 
                     b.metric(
                         'Rows with Changes',
-                        int(changed_rows)
+                        changed_rows
                     )
 
                     st.caption(
