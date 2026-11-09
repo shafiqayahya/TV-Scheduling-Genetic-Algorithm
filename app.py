@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -326,6 +325,10 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
 
 </style>''', unsafe_allow_html=True)
 
+# ============================================================
+# MAIN HEADER
+# ============================================================
+
 st.markdown(
     '<div class="hero">'
     '<h1>📺 TV Scheduling Optimizer</h1>'
@@ -333,6 +336,10 @@ st.markdown(
     '</div>',
     unsafe_allow_html=True
 )
+
+# ============================================================
+# LOAD RATINGS
+# ============================================================
 
 if not MODIFIED.is_file():
     st.error(
@@ -347,20 +354,35 @@ except Exception as exc:
     st.error(f'Could not load ratings CSV: {exc}')
     st.stop()
 
+# ============================================================
+# SESSION STATE
+# ============================================================
+
 if 'trials' not in st.session_state:
     st.session_state.trials = []
 
+# ============================================================
 # FIXED GA PARAMETERS
+# ============================================================
+
 generations = 100
 population_size = 50
 seed = 42
 
+# ============================================================
+# SIDEBAR
+# ============================================================
+
 with st.sidebar:
+
     st.header('GA Control Panel')
 
     co_r = st.slider(
         'Crossover Rate (CO_R)',
-        0.0, 0.95, 0.80, 0.01
+        0.0,
+        0.95,
+        0.80,
+        0.01
     )
 
     mut_r = st.number_input(
@@ -384,9 +406,16 @@ with st.sidebar:
         len(st.session_state.trials)
     )
 
+# ============================================================
+# RUN GENETIC ALGORITHM
+# ============================================================
+
 if run:
+
     try:
+
         with st.spinner('Optimizing schedule...'):
+
             rows, score, upper, history = run_ga(
                 ratings,
                 hours,
@@ -412,11 +441,17 @@ if run:
         st.success('Schedule generated successfully.')
 
     except Exception as exc:
+
         st.error(f'GA execution failed: {exc}')
+
+# ============================================================
+# MAIN METRICS
+# ============================================================
 
 current = st.session_state.get('current')
 
 if current:
+
     a, b, c = st.columns(3)
 
     a.metric(
@@ -436,11 +471,16 @@ if current:
     )
 
 else:
+
     a, b, c = st.columns(3)
 
     a.metric('Time Slots', len(hours))
     b.metric('Program Categories', len(ratings))
     c.metric('Saved Trials', len(st.session_state.trials))
+
+# ============================================================
+# MAIN TABS
+# ============================================================
 
 scheduler, comparison, changes = st.tabs([
     'GA Scheduler',
@@ -448,10 +488,16 @@ scheduler, comparison, changes = st.tabs([
     'Rating Changes'
 ])
 
+# ============================================================
+# TAB 1 — GA SCHEDULER
+# ============================================================
+
 with scheduler:
+
     st.subheader('Generated TV Schedule')
 
     if current is None:
+
         st.markdown(
             '<div class="burgundy-info">'
             'Set parameters in the sidebar and click Run Genetic Algorithm.'
@@ -460,6 +506,7 @@ with scheduler:
         )
 
     else:
+
         st.caption(
             f"CO_R={current['co_r']:.2f} · "
             f"MUT_R={current['mut_r']:.2f} · "
@@ -486,6 +533,7 @@ with scheduler:
         left, right = st.columns(2)
 
         with left:
+
             st.download_button(
                 '⬇ Download Schedule CSV',
                 schedule_df.to_csv(index=False),
@@ -495,28 +543,40 @@ with scheduler:
             )
 
         with right:
+
             if st.button(
                 '💾 Save Trial for Comparison',
                 width='stretch'
             ):
+
                 if len(st.session_state.trials) >= 3:
+
                     st.warning(
                         'Three trials already saved. '
                         'Clear trials to start again.'
                     )
+
                 else:
+
                     st.session_state.trials.append({
                         **current,
                         'trial': len(st.session_state.trials) + 1
                     })
+
                     st.rerun()
 
+# ============================================================
+# TAB 2 — TRIAL COMPARISON
+# ============================================================
+
 with comparison:
+
     st.subheader('Three-Trial Experiment Comparison')
 
     trials = st.session_state.trials
 
     if not trials:
+
         st.markdown(
             '<div class="burgundy-info">'
             'Run GA and save up to three trials in the GA Scheduler tab.'
@@ -525,6 +585,7 @@ with comparison:
         )
 
     else:
+
         st.caption(
             f"{len(trials)} of 3 trials saved for comparison."
         )
@@ -582,6 +643,7 @@ with comparison:
         st.subheader('Generated Schedule for Each Trial')
 
         for t in trials:
+
             with st.expander(
                 f"Trial {t['trial']} - Generated TV Schedule"
             ):
@@ -617,6 +679,7 @@ with comparison:
                 )
 
         if len(trials) == 3:
+
             best_trial = max(
                 trials,
                 key=lambda t: t['score']
@@ -624,7 +687,7 @@ with comparison:
 
             st.markdown(
                 '<div class="burgundy-info">'
-                f"All three trials completed. "
+                'All three trials completed. '
                 f"Trial {best_trial['trial']} achieved the highest fitness "
                 f"of {best_trial['score']:.2f}."
                 '</div>',
@@ -635,13 +698,21 @@ with comparison:
             'Clear Saved Trials',
             width='stretch'
         ):
+
             st.session_state.trials = []
+
             st.rerun()
 
+# ============================================================
+# TAB 3 — RATING CHANGES
+# ============================================================
+
 with changes:
+
     st.subheader('Rating Changes')
 
     if not ORIGINAL.is_file():
+
         st.markdown(
             '<div class="burgundy-info">'
             'Original ratings CSV is not available. '
@@ -651,115 +722,261 @@ with changes:
         )
 
     else:
+
         try:
+
+            # =================================================
+            # LOAD ORIGINAL AND MODIFIED RATINGS
+            # =================================================
+
             original_df = pd.read_csv(ORIGINAL)
             modified_df = pd.read_csv(MODIFIED)
 
-            st.subheader('Original Program Ratings')
-
-            st.dataframe(
-                original_df,
-                width='stretch',
-                hide_index=True
-            )
-
-            st.subheader('Modified Program Ratings')
-
-            st.dataframe(
-                modified_df,
-                width='stretch',
-                hide_index=True
-            )
-
-            st.subheader('Rating Changes Comparison')
+            # =================================================
+            # VALIDATE DATASET STRUCTURE
+            # =================================================
 
             if (
                 original_df.columns.tolist()
                 == modified_df.columns.tolist()
                 and len(original_df) == len(modified_df)
             ):
-                original_numeric = original_df.select_dtypes(
-                    include='number'
-                ).columns.tolist()
 
-                modified_numeric = modified_df.select_dtypes(
-                    include='number'
-                ).columns.tolist()
+                # =============================================
+                # IDENTIFY PROGRAM COLUMN
+                # =============================================
 
-                numeric_columns = [
-                    col for col in original_numeric
-                    if col in modified_numeric
+                program_column = original_df.columns[0]
+
+                # =============================================
+                # IDENTIFY HOURLY RATING COLUMNS
+                # =============================================
+
+                hour_columns = [
+                    col
+                    for col in original_df.columns
+                    if str(col).strip().lower().startswith('hour')
                 ]
 
-                if numeric_columns:
-                    comparison_changes = modified_df.copy()
+                if not hour_columns:
 
-                    for col in numeric_columns:
-                        comparison_changes[f'{col} Change'] = (
-                            modified_df[col] - original_df[col]
-                        )
-
-                    st.dataframe(
-                        comparison_changes,
-                        width='stretch',
-                        hide_index=True
-                    )
-
-                    # ==========================================
-                    # FIX: COMPARE RATINGS WITHOUT SERIES ERROR
-                    # ==========================================
-
-                    # Compare each cell between both CSV files.
-                    # A cell is considered unchanged if both
-                    # original and modified values are missing.
-
-                    changed_cells = (
-                        original_df.ne(modified_df)
-                        & (
-                            original_df.notna()
-                            | modified_df.notna()
-                        )
-                    )
-
-                    # Count how many rows contain at least
-                    # one changed value.
-
-                    changed_rows = int(
-                        changed_cells.any(axis=1).sum()
-                    )
-
-                    a, b = st.columns(2)
-
-                    a.metric(
-                        'Total Records',
-                        len(modified_df)
-                    )
-
-                    b.metric(
-                        'Rows with Changes',
-                        changed_rows
-                    )
-
-                    st.caption(
-                        'Rating differences are calculated as '
-                        'Modified Rating - Original Rating. '
-                        'Rows are compared in their existing order.'
+                    st.warning(
+                        'No hourly rating columns were found '
+                        'in the CSV files.'
                     )
 
                 else:
-                    st.info(
-                        'No matching numeric rating columns were found '
-                        'for calculating rating differences.'
+
+                    # =========================================
+                    # CHECK PROGRAM ORDER
+                    # =========================================
+
+                    same_program_order = (
+                        original_df[program_column]
+                        .reset_index(drop=True)
+                        .equals(
+                            modified_df[program_column]
+                            .reset_index(drop=True)
+                        )
                     )
 
+                    if not same_program_order:
+
+                        st.warning(
+                            'The program order differs between '
+                            'the original and modified CSV files. '
+                            'Rating comparison requires matching '
+                            'program rows.'
+                        )
+
+                    else:
+
+                        # =====================================
+                        # BUILD CHANGED RATINGS LIST
+                        # =====================================
+
+                        rating_changes = []
+
+                        for row_index in range(len(original_df)):
+
+                            program_name = original_df.iloc[
+                                row_index
+                            ][program_column]
+
+                            for hour in hour_columns:
+
+                                original_rate = original_df.iloc[
+                                    row_index
+                                ][hour]
+
+                                modified_rate = modified_df.iloc[
+                                    row_index
+                                ][hour]
+
+                                # Treat two missing values
+                                # as unchanged.
+
+                                both_missing = (
+                                    pd.isna(original_rate)
+                                    and pd.isna(modified_rate)
+                                )
+
+                                if both_missing:
+                                    continue
+
+                                if original_rate != modified_rate:
+
+                                    rating_changes.append({
+                                        'Type of Program': program_name,
+                                        'Hour': hour,
+                                        'Original Rates': original_rate,
+                                        'Modified Rates': modified_rate
+                                    })
+
+                        # =====================================
+                        # CREATE COMPARISON DATAFRAME
+                        # =====================================
+
+                        changes_df = pd.DataFrame(
+                            rating_changes,
+                            columns=[
+                                'Type of Program',
+                                'Hour',
+                                'Original Rates',
+                                'Modified Rates'
+                            ]
+                        )
+
+                        # =====================================
+                        # COUNT MODIFIED PROGRAM ROWS
+                        # =====================================
+
+                        changed_programs = (
+                            changes_df['Type of Program'].nunique()
+                            if not changes_df.empty
+                            else 0
+                        )
+
+                        # =====================================
+                        # 1. SUMMARY METRICS AT THE TOP
+                        # =====================================
+
+                        summary_left, summary_right = st.columns(2)
+
+                        with summary_left:
+
+                            st.metric(
+                                'Total Records',
+                                len(modified_df)
+                            )
+
+                        with summary_right:
+
+                            st.metric(
+                                'Rows with Changes',
+                                int(changed_programs)
+                            )
+
+                        # =====================================
+                        # 2. RATING CHANGES COMPARISON
+                        # =====================================
+
+                        st.subheader('Rating Changes Comparison')
+
+                        if changes_df.empty:
+
+                            st.markdown(
+                                '<div class="burgundy-info">'
+                                'No rating changes were detected '
+                                'between the original and modified datasets.'
+                                '</div>',
+                                unsafe_allow_html=True
+                            )
+
+                        else:
+
+                            st.dataframe(
+                                changes_df,
+                                width='stretch',
+                                hide_index=True,
+                                column_config={
+                                    'Type of Program':
+                                        st.column_config.TextColumn(
+                                            'Type of Program'
+                                        ),
+                                    'Hour':
+                                        st.column_config.TextColumn(
+                                            'Hour'
+                                        ),
+                                    'Original Rates':
+                                        st.column_config.NumberColumn(
+                                            'Original Rates',
+                                            format='%.2f'
+                                        ),
+                                    'Modified Rates':
+                                        st.column_config.NumberColumn(
+                                            'Modified Rates',
+                                            format='%.2f'
+                                        )
+                                }
+                            )
+
+                            st.caption(
+                                'Only modified ratings are displayed. '
+                                'Each row represents one program and '
+                                'hour with a changed rating.'
+                            )
+
+                        # =====================================
+                        # 3. ORIGINAL PROGRAM RATINGS
+                        # =====================================
+
+                        st.subheader('Original Program Ratings')
+
+                        st.dataframe(
+                            original_df,
+                            width='stretch',
+                            hide_index=True
+                        )
+
+                        # =====================================
+                        # 4. MODIFIED PROGRAM RATINGS
+                        # =====================================
+
+                        st.subheader('Modified Program Ratings')
+
+                        st.dataframe(
+                            modified_df,
+                            width='stretch',
+                            hide_index=True
+                        )
+
             else:
+
                 st.warning(
-                    'Original and modified CSV files have different '
-                    'columns or row counts. Both datasets are displayed '
-                    'above, but automatic row-by-row comparison is not available.'
+                    'Original and modified CSV files have '
+                    'different columns or row counts. '
+                    'The datasets cannot be compared automatically.'
+                )
+
+                st.subheader('Original Program Ratings')
+
+                st.dataframe(
+                    original_df,
+                    width='stretch',
+                    hide_index=True
+                )
+
+                st.subheader('Modified Program Ratings')
+
+                st.dataframe(
+                    modified_df,
+                    width='stretch',
+                    hide_index=True
                 )
 
         except Exception as exc:
+
             st.error(
                 f'Could not compare rating CSV files: {exc}'
             )
