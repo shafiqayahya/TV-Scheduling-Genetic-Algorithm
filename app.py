@@ -70,7 +70,16 @@ section[data-testid="stSidebar"] {
 
 /* SIDEBAR CONTENT ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
-    padding: 0.5rem 1.35rem 1.25rem 1.35rem !important;
+    padding: 0rem 1.35rem 1.25rem 1.35rem !important;
+}
+
+/* MOVE SIDEBAR CONTENT UP */
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+    padding-top: 0rem !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div {
+    margin-top: -35px !important;
 }
 
 /* SIDEBAR HEADING — CENTER */
