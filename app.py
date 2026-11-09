@@ -47,6 +47,22 @@ button[aria-label="Open sidebar"] {
     display: none !important;
 }
 
+/* SIDEBAR CONTENT ALIGNMENT */
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+    padding: 2rem 1.4rem 2rem 1.4rem !important;
+}
+
+/* SIDEBAR HEADING */
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2px;
+    padding-bottom: 14px !important;
+    margin-bottom: 8px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+}
+
 /* SIDEBAR TEXT — WHITE */
 section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
@@ -57,9 +73,26 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
     color: #FFFFFF !important;
 }
 
+/* CONSISTENT WIDGET SPACING */
+section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+    gap: 1.25rem !important;
+}
+
+/* INPUT LABEL ALIGNMENT */
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
+    margin-bottom: 7px !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
+    font-size: 0.91rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+}
+
 /* SIDEBAR SLIDER — LIGHT PINK TRACK */
 section[data-testid="stSidebar"] [data-testid="stSlider"] {
     accent-color: #FFF4F7 !important;
+    padding-bottom: 3px !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] {
@@ -99,6 +132,13 @@ section[data-testid="stSidebar"] input {
     -webkit-text-fill-color: #64152D !important;
 }
 
+/* NUMBER INPUT — CONSISTENT HEIGHT */
+section[data-testid="stSidebar"] [data-testid="stNumberInput"] [data-baseweb="input"] {
+    min-height: 46px !important;
+    border-radius: 11px !important;
+    overflow: hidden;
+}
+
 /* SIDEBAR NUMBER INPUT BUTTONS */
 section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
     background: #FFE5EC !important;
@@ -110,8 +150,12 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"] {
     background: #FFF4F7 !important;
     border: 1px solid #FFF4F7 !important;
     color: #64152D !important;
-    border-radius: 12px;
-    font-weight: 700;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 0.94rem !important;
+    margin-top: 5px !important;
 }
 
 section[data-testid="stSidebar"] .stButton button[kind="primary"] p,
@@ -141,6 +185,9 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover span {
 section[data-testid="stSidebar"] [data-testid="stMetric"] {
     background: #FFF4F7 !important;
     border: 1px solid #F4C7D4 !important;
+    padding: 18px 20px !important;
+    border-radius: 14px !important;
+    min-height: 108px;
 }
 
 /* SIDEBAR SAVED TRIALS TEXT AND NUMBER */
@@ -149,6 +196,15 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"],
 section[data-testid="stSidebar"] [data-testid="stMetricValue"] > div {
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stMetricLabel"] {
+    margin-bottom: 7px !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    font-weight: 600 !important;
 }
 
 /* MAIN INFORMATION BOX — BURGUNDY GRADIENT & WHITE TEXT */
@@ -200,12 +256,19 @@ if 'trials' not in st.session_state:
 
 with st.sidebar:
     st.header('GA Control Panel')
+
     co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
+
     mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=1.0, value=0.20, step=0.01, format='%.2f')
+
     generations = st.number_input('Generations', 1, 2000, 100)
+
     population_size = st.number_input('Population Size', 4, 1000, 50)
+
     seed = st.number_input('Random Seed', 0, 1000000, 42)
+
     run = st.button('Run Genetic Algorithm', icon=':material/play_arrow:', type='primary', width='stretch')
+
     st.metric('Saved Trials', len(st.session_state.trials))
 
 if run:
