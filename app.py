@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -78,7 +79,7 @@ button[aria-label="Open sidebar"] {
 
 /* SIDEBAR CONTENT ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
-    padding: 0.8rem 1.35rem 1rem 1.35rem !important;
+    padding: 0.5rem 1.35rem 1.25rem 1.35rem !important;
 }
 
 /* SIDEBAR HEADING — CENTER */
@@ -90,9 +91,9 @@ section[data-testid="stSidebar"] h3 {
     font-size: 1.28rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.3px;
-    padding-bottom: 10px !important;
+    padding-bottom: 12px !important;
     margin-top: 0 !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 10px !important;
     border-bottom: 1px solid rgba(255,255,255,0.25);
 }
 
@@ -103,26 +104,26 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
     color: #FFFFFF !important;
 }
 
-/* CONSISTENT SIDEBAR SPACING */
+/* CONSISTENT SIDEBAR WIDGET SPACING */
 section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    gap: 0.65rem !important;
+    gap: 0.85rem !important;
 }
 
-/* INPUT LABELS */
+/* INPUT LABEL ALIGNMENT */
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
-    margin-bottom: 4px !important;
+    margin-bottom: 6px !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
     font-size: 0.88rem !important;
     font-weight: 600 !important;
-    line-height: 1.3 !important;
+    line-height: 1.35 !important;
 }
 
 /* SIDEBAR SLIDER */
 section[data-testid="stSidebar"] [data-testid="stSlider"] {
     accent-color: #FFF4F7 !important;
-    padding-bottom: 0 !important;
+    padding-bottom: 2px !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] {
@@ -150,14 +151,14 @@ section[data-testid="stSidebar"] input {
     -webkit-text-fill-color: #64152D !important;
 }
 
-/* NUMBER INPUT HEIGHT */
+/* NUMBER INPUT — CONSISTENT HEIGHT */
 section[data-testid="stSidebar"] [data-testid="stNumberInput"] [data-baseweb="input"] {
-    min-height: 40px !important;
+    min-height: 42px !important;
     border-radius: 10px !important;
     overflow: hidden;
 }
 
-/* NUMBER INPUT BUTTONS */
+/* SIDEBAR NUMBER INPUT BUTTONS */
 section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
     background: #FFE5EC !important;
     color: #64152D !important;
@@ -171,9 +172,9 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"] {
     border-radius: 11px !important;
     font-weight: 700 !important;
     width: 100% !important;
-    min-height: 43px !important;
+    min-height: 45px !important;
     font-size: 0.91rem !important;
-    margin-top: 3px !important;
+    margin-top: 4px !important;
 }
 
 section[data-testid="stSidebar"] .stButton button[kind="primary"] p,
@@ -197,9 +198,9 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
 section[data-testid="stSidebar"] [data-testid="stMetric"] {
     background: #FFF4F7 !important;
     border: 1px solid #F4C7D4 !important;
-    padding: 12px 16px !important;
+    padding: 14px 17px !important;
     border-radius: 12px !important;
-    min-height: 85px !important;
+    min-height: 92px !important;
 }
 
 /* SIDEBAR SAVED TRIALS TEXT AND NUMBER */
@@ -211,7 +212,7 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] > div {
 }
 
 section[data-testid="stSidebar"] [data-testid="stMetricLabel"] {
-    margin-bottom: 4px !important;
+    margin-bottom: 5px !important;
 }
 
 section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
@@ -219,7 +220,7 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
     font-weight: 600 !important;
 }
 
-/* MAIN INFORMATION BOX */
+/* MAIN INFORMATION BOX — BURGUNDY GRADIENT */
 .burgundy-info {
     background: linear-gradient(
         110deg,
