@@ -42,6 +42,19 @@ section[data-testid="stSidebar"] [data-testid="stSlider"] {
     accent-color: #FFF4F7;
 }
 
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
+    background: #FFF4F7 !important;
+    border-color: #FFF4F7 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] > div > div {
+    background-color: #FFF4F7 !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"] [data-testid="stSliderTrack"] {
+    background: #FFF4F7 !important;
+}
+
 /* SIDEBAR NUMBER INPUT */
 section[data-testid="stSidebar"] input {
     background-color: #FFF4F7 !important;
@@ -57,17 +70,27 @@ section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
 
 /* SIDEBAR RUN BUTTON */
 section[data-testid="stSidebar"] .stButton button[kind="primary"] {
-    background: #A7234A !important;
-    border: 1px solid #881337 !important;
-    color: #FFFFFF !important;
+    background: #FFF4F7 !important;
+    border: 1px solid #FFF4F7 !important;
+    color: #64152D !important;
     border-radius: 12px;
     font-weight: 700;
 }
 
+section[data-testid="stSidebar"] .stButton button[kind="primary"] p {
+    color: #64152D !important;
+    -webkit-text-fill-color: #64152D !important;
+}
+
 section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
-    background: #881337 !important;
-    border-color: #64152D !important;
-    color: #FFFFFF !important;
+    background: #FFE5EC !important;
+    border-color: #F4C7D4 !important;
+    color: #64152D !important;
+}
+
+section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover p {
+    color: #64152D !important;
+    -webkit-text-fill-color: #64152D !important;
 }
 
 /* SIDEBAR SAVED TRIALS CARD */
