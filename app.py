@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from html import escape
 
@@ -161,7 +160,7 @@ section[data-testid="stSidebar"]
 
 section[data-testid="stSidebar"]
 [data-testid="stVerticalBlock"] {
-    gap: 1.5rem !important;
+    gap: 2.0 rem !important;
 }
 
 /* BALANCED SIDEBAR DISTRIBUTION */
@@ -265,7 +264,7 @@ section[data-testid="stSidebar"]
 section[data-testid="stSidebar"]
 [data-testid="stSlider"]
 [role="slider"] {
-    background: #881337 !important;
+    background: #FFF4F7 !important;
     border: 2px solid #BE365A !important;
     box-shadow: 0 0 0 1px #F4C7D4 !important;
 }
