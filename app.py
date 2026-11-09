@@ -142,6 +142,21 @@ section[data-testid="stSidebar"][aria-expanded="true"] {
     border-color:#A7234A;
     color:white;
 }
+
+/* GA SCHEDULER & TRIAL COMPARISON INFO BOX */
+div[data-testid="stAlert"] {
+    background-color: #FBE8EE !important;
+    border: 1px solid #F4C7D4 !important;
+    border-radius: 12px !important;
+    color: #64152D !important;
+}
+
+div[data-testid="stAlert"] p,
+div[data-testid="stAlert"] span,
+div[data-testid="stAlert"] [data-testid="stMarkdownContainer"] {
+    color: #64152D !important;
+    -webkit-text-fill-color: #64152D !important;
+}
 </style>''', unsafe_allow_html=True)
 
 st.markdown('<div class="hero"><h1>📺 TV Scheduling Optimizer</h1><p>JIE42903 · Evolutionary Computing · Genetic Algorithm</p></div>', unsafe_allow_html=True)
