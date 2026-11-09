@@ -3,6 +3,10 @@ import pandas as pd
 import streamlit as st
 from ga_engine import load_ratings, run_ga
 
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
+
 st.set_page_config(
     page_title='TV Scheduling | Genetic Algorithm',
     page_icon='📺',
@@ -13,6 +17,10 @@ st.set_page_config(
 ROOT = Path(__file__).resolve().parent
 MODIFIED = ROOT / 'program_ratings_modified.csv'
 ORIGINAL = ROOT / 'program_ratings_original.csv'
+
+# ============================================================
+# CUSTOM CSS
+# ============================================================
 
 st.markdown('''<style>
 
@@ -50,7 +58,7 @@ st.markdown('''<style>
     border-radius: 12px;
 }
 
-/* SIDEBAR — BURGUNDY & ROSE THEME */
+/* SIDEBAR THEME */
 section[data-testid="stSidebar"] {
     background: linear-gradient(
         155deg,
@@ -61,7 +69,7 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid #A72B50;
 }
 
-/* SIDEBAR — ALWAYS VISIBLE & STATIC */
+/* STATIC SIDEBAR */
 @media (min-width: 768px) {
     section[data-testid="stSidebar"] {
         min-width: 320px !important;
@@ -72,7 +80,7 @@ section[data-testid="stSidebar"] {
     }
 }
 
-/* HIDE SIDEBAR OPEN & CLOSE BUTTONS */
+/* HIDE SIDEBAR CONTROLS */
 [data-testid="stSidebarCollapseButton"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarNavCollapseButton"],
@@ -82,7 +90,7 @@ button[aria-label="Open sidebar"] {
     display: none !important;
 }
 
-/* REMOVE SIDEBAR HEADER EMPTY SPACE */
+/* REMOVE SIDEBAR HEADER SPACE */
 section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
     min-height: 0 !important;
     height: 0 !important;
@@ -90,22 +98,21 @@ section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
     overflow: hidden !important;
 }
 
-/* SIDEBAR CONTENT ALIGNMENT */
+/* SIDEBAR PADDING */
 section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
     padding: 2rem 1.35rem 2rem 1.35rem !important;
     box-sizing: border-box !important;
 }
 
-/* MOVE SIDEBAR CONTENT UP */
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
     padding-top: 0 !important;
 }
 
-/* SIDEBAR HEADING — CENTER */
+/* SIDEBAR HEADING */
 section[data-testid="stSidebar"] h1,
 section[data-testid="stSidebar"] h2,
 section[data-testid="stSidebar"] h3 {
-    color: #FFFFFF !important;
+    color: white !important;
     text-align: center !important;
     font-size: 1.28rem !important;
     font-weight: 700 !important;
@@ -116,19 +123,19 @@ section[data-testid="stSidebar"] h3 {
     border-bottom: 1px solid rgba(255,255,255,0.25);
 }
 
-/* SIDEBAR TEXT — WHITE */
+/* SIDEBAR TEXT */
 section[data-testid="stSidebar"] p,
 section[data-testid="stSidebar"] label,
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
-    color: #FFFFFF !important;
+    color: white !important;
 }
 
-/* CONSISTENT SIDEBAR WIDGET SPACING */
+/* SIDEBAR SPACING */
 section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
     gap: 1.5rem !important;
 }
 
-/* BALANCED SIDEBAR HEIGHT AND DISTRIBUTION */
+/* BALANCED SIDEBAR DISTRIBUTION */
 @media (min-width: 768px) and (min-height: 650px) {
 
     section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
@@ -155,7 +162,7 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
     }
 }
 
-/* COMPACT LAYOUT FOR SMALL SCREENS */
+/* SMALL SCREEN SPACING */
 @media (max-width: 767px), (max-height: 649px) {
 
     section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
@@ -168,7 +175,7 @@ section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
     }
 }
 
-/* INPUT LABEL ALIGNMENT */
+/* INPUT LABELS */
 section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
     margin-bottom: 8px !important;
 }
@@ -179,7 +186,7 @@ section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
     line-height: 1.35 !important;
 }
 
-/* SIDEBAR SLIDER */
+/* SLIDER */
 section[data-testid="stSidebar"] [data-testid="stSlider"] {
     accent-color: #FFF4F7 !important;
     padding-bottom: 0 !important;
@@ -189,10 +196,7 @@ section[data-testid="stSidebar"] [data-testid="stSlider"] [data-baseweb="slider"
     --slider-color: #FFF4F7;
 }
 
-section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrack"] {
-    background: #FFF4F7 !important;
-}
-
+section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrack"],
 section[data-testid="stSidebar"] [data-testid="stSlider"] [data-testid="stSliderTrackFill"] {
     background: #FFF4F7 !important;
 }
@@ -203,27 +207,25 @@ section[data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
     box-shadow: 0 0 0 1px #F4C7D4 !important;
 }
 
-/* SIDEBAR NUMBER INPUT */
+/* NUMBER INPUT */
 section[data-testid="stSidebar"] input {
     background-color: #FFF4F7 !important;
     color: #64152D !important;
     -webkit-text-fill-color: #64152D !important;
 }
 
-/* NUMBER INPUT — CONSISTENT HEIGHT */
 section[data-testid="stSidebar"] [data-testid="stNumberInput"] [data-baseweb="input"] {
     min-height: 46px !important;
     border-radius: 10px !important;
     overflow: hidden;
 }
 
-/* SIDEBAR NUMBER INPUT BUTTONS */
 section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
     background: #FFE5EC !important;
     color: #64152D !important;
 }
 
-/* RUN GENETIC ALGORITHM BUTTON */
+/* RUN GA BUTTON */
 section[data-testid="stSidebar"] .stButton button[kind="primary"] {
     background: #FFF4F7 !important;
     border: 1px solid #FFF4F7 !important;
@@ -250,10 +252,9 @@ section[data-testid="stSidebar"] .stButton button[kind="primary"] svg {
 section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
     background: #FFE5EC !important;
     border-color: #F4C7D4 !important;
-    color: #64152D !important;
 }
 
-/* SIDEBAR SAVED TRIALS CARD */
+/* SIDEBAR METRIC */
 section[data-testid="stSidebar"] [data-testid="stMetric"] {
     background: #FFF4F7 !important;
     border: 1px solid #F4C7D4 !important;
@@ -262,7 +263,6 @@ section[data-testid="stSidebar"] [data-testid="stMetric"] {
     min-height: 110px !important;
 }
 
-/* SIDEBAR SAVED TRIALS TEXT AND NUMBER */
 section[data-testid="stSidebar"] [data-testid="stMetricLabel"] p,
 section[data-testid="stSidebar"] [data-testid="stMetricValue"],
 section[data-testid="stSidebar"] [data-testid="stMetricValue"] > div {
@@ -279,7 +279,7 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
     font-weight: 600 !important;
 }
 
-/* MAIN INFORMATION BOX — BURGUNDY GRADIENT */
+/* INFORMATION BOX */
 .burgundy-info {
     background: linear-gradient(
         110deg,
@@ -292,31 +292,31 @@ section[data-testid="stSidebar"] [data-testid="stMetricValue"] {
     padding: 20px !important;
     margin-top: 12px;
     margin-bottom: 16px;
-    color: #FFFFFF !important;
+    color: white !important;
     font-size: 16px;
     line-height: 1.5;
 }
 
 .burgundy-info p,
 .burgundy-info span {
-    color: #FFFFFF !important;
-    -webkit-text-fill-color: #FFFFFF !important;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
     margin: 0 !important;
 }
 
-/* TRIAL COMPARISON TABLE */
+/* DATAFRAME */
 [data-testid="stDataFrame"] {
     border-radius: 12px;
     overflow: hidden;
 }
 
-/* TRIAL EXPANDER */
+/* EXPANDERS */
 [data-testid="stExpander"] {
     border: 1px solid #F4D8E0 !important;
     border-radius: 12px !important;
 }
 
-/* MAIN BUTTON STYLE */
+/* MAIN PRIMARY BUTTON */
 .stButton button[kind="primary"] {
     background: #A7234A;
     border-color: #A7234A;
@@ -338,13 +338,13 @@ st.markdown(
 )
 
 # ============================================================
-# LOAD RATINGS
+# LOAD MODIFIED DATASET
 # ============================================================
 
 if not MODIFIED.is_file():
     st.error(
         'Missing program_ratings_modified.csv. '
-        'Add this file to the same GitHub folder as app.py.'
+        'Add this file to the same folder as app.py.'
     )
     st.stop()
 
@@ -355,19 +355,59 @@ except Exception as exc:
     st.stop()
 
 # ============================================================
-# SESSION STATE
+# EXPERIMENT CONFIGURATION
 # ============================================================
 
-if 'trials' not in st.session_state:
-    st.session_state.trials = []
+# Default is the baseline.
+# Trial 1, 2 and 3 are separate experiments.
 
-# ============================================================
-# FIXED GA PARAMETERS
-# ============================================================
+EXPERIMENTS = {
+    'Default': {
+        'co_r': 0.80,
+        'mut_r': 0.20
+    },
+    'Trial 1': {
+        'co_r': 0.85,
+        'mut_r': 0.01
+    },
+    'Trial 2': {
+        'co_r': 0.90,
+        'mut_r': 0.03
+    },
+    'Trial 3': {
+        'co_r': 0.95,
+        'mut_r': 0.05
+    }
+}
+
+EXPERIMENT_ORDER = [
+    'Default',
+    'Trial 1',
+    'Trial 2',
+    'Trial 3'
+]
+
+# Fixed GA settings for fair comparison.
 
 generations = 100
 population_size = 50
 seed = 42
+
+# ============================================================
+# SESSION STATE
+# ============================================================
+
+if 'experiments' not in st.session_state:
+    st.session_state.experiments = {}
+
+if 'current' not in st.session_state:
+    st.session_state.current = None
+
+if 'co_r_input' not in st.session_state:
+    st.session_state.co_r_input = 0.80
+
+if 'mut_r_input' not in st.session_state:
+    st.session_state.mut_r_input = 0.20
 
 # ============================================================
 # SIDEBAR
@@ -379,19 +419,19 @@ with st.sidebar:
 
     co_r = st.slider(
         'Crossover Rate (CO_R)',
-        0.0,
-        0.95,
-        0.80,
-        0.01
+        min_value=0.0,
+        max_value=0.95,
+        step=0.01,
+        key='co_r_input'
     )
 
     mut_r = st.number_input(
         'Mutation Rate (MUT_R)',
         min_value=0.0,
         max_value=1.0,
-        value=0.2,
         step=0.01,
-        format='%.2f'
+        format='%.2f',
+        key='mut_r_input'
     )
 
     run = st.button(
@@ -402,9 +442,26 @@ with st.sidebar:
     )
 
     st.metric(
-        'Saved Trials',
-        len(st.session_state.trials)
+        'Saved Experiments',
+        f"{len(st.session_state.experiments)} / 4"
     )
+
+# ============================================================
+# IDENTIFY EXPERIMENT FROM PARAMETERS
+# ============================================================
+
+def identify_experiment(crossover_rate, mutation_rate):
+
+    for experiment_name, parameters in EXPERIMENTS.items():
+
+        if (
+            abs(crossover_rate - parameters['co_r']) < 1e-9
+            and
+            abs(mutation_rate - parameters['mut_r']) < 1e-9
+        ):
+            return experiment_name
+
+    return None
 
 # ============================================================
 # RUN GENETIC ALGORITHM
@@ -421,22 +478,28 @@ if run:
                 hours,
                 crossover_rate=co_r,
                 mutation_rate=mut_r,
-                generations=int(generations),
-                population_size=int(population_size),
-                seed=int(seed)
+                generations=generations,
+                population_size=population_size,
+                seed=seed
             )
 
-        st.session_state.current = dict(
-            rows=rows,
-            score=score,
-            upper=upper,
-            history=history,
-            co_r=co_r,
-            mut_r=mut_r,
-            generations=int(generations),
-            population_size=int(population_size),
-            seed=int(seed)
+        experiment_name = identify_experiment(
+            co_r,
+            mut_r
         )
+
+        st.session_state.current = {
+            'experiment': experiment_name,
+            'rows': rows,
+            'score': score,
+            'upper': upper,
+            'history': history,
+            'co_r': co_r,
+            'mut_r': mut_r,
+            'generations': generations,
+            'population_size': population_size,
+            'seed': seed
+        }
 
         st.success('Schedule generated successfully.')
 
@@ -448,9 +511,9 @@ if run:
 # MAIN METRICS
 # ============================================================
 
-current = st.session_state.get('current')
+current = st.session_state.current
 
-if current:
+if current is not None:
 
     a, b, c = st.columns(3)
 
@@ -466,8 +529,11 @@ if current:
 
     c.metric(
         'Fitness / Upper Bound',
-        f"{100 * current['score'] / current['upper']:.1f}%"
-        if current['upper'] else 'N/A'
+        (
+            f"{100 * current['score'] / current['upper']:.1f}%"
+            if current['upper']
+            else 'N/A'
+        )
     )
 
 else:
@@ -476,7 +542,10 @@ else:
 
     a.metric('Time Slots', len(hours))
     b.metric('Program Categories', len(ratings))
-    c.metric('Saved Trials', len(st.session_state.trials))
+    c.metric(
+        'Saved Experiments',
+        f"{len(st.session_state.experiments)} / 4"
+    )
 
 # ============================================================
 # MAIN TABS
@@ -500,14 +569,22 @@ with scheduler:
 
         st.markdown(
             '<div class="burgundy-info">'
-            'Set parameters in the sidebar and click Run Genetic Algorithm.'
+            'Start with Default (CO_R=0.80, MUT_R=0.20), '
+            'then run Trial 1, Trial 2 and Trial 3.'
             '</div>',
             unsafe_allow_html=True
         )
 
     else:
 
+        experiment_label = (
+            current['experiment']
+            if current['experiment'] is not None
+            else 'Custom Parameters'
+        )
+
         st.caption(
+            f"Experiment={experiment_label} · "
             f"CO_R={current['co_r']:.2f} · "
             f"MUT_R={current['mut_r']:.2f} · "
             f"Generations={current['generations']} · "
@@ -525,8 +602,10 @@ with scheduler:
 
         st.subheader('Fitness Convergence')
 
+        history_df = pd.DataFrame(current['history'])
+
         st.line_chart(
-            pd.DataFrame(current['history']).set_index('Generation'),
+            history_df.set_index('Generation'),
             width='stretch'
         )
 
@@ -536,34 +615,80 @@ with scheduler:
 
             st.download_button(
                 '⬇ Download Schedule CSV',
-                schedule_df.to_csv(index=False),
-                'generated_schedule.csv',
-                'text/csv',
+                data=schedule_df.to_csv(index=False),
+                file_name='generated_schedule.csv',
+                mime='text/csv',
                 width='stretch'
             )
 
         with right:
 
             if st.button(
-                '💾 Save Trial for Comparison',
+                '💾 Save Experiment for Comparison',
                 width='stretch'
             ):
 
-                if len(st.session_state.trials) >= 3:
+                experiment_name = current['experiment']
+
+                if experiment_name is None:
 
                     st.warning(
-                        'Three trials already saved. '
-                        'Clear trials to start again.'
+                        'These parameters do not match Default, '
+                        'Trial 1, Trial 2 or Trial 3. '
+                        'Use the experiment values shown below '
+                        'before saving.'
                     )
 
                 else:
 
-                    st.session_state.trials.append({
-                        **current,
-                        'trial': len(st.session_state.trials) + 1
-                    })
+                    st.session_state.experiments[
+                        experiment_name
+                    ] = {
+                        **current
+                    }
+
+                    st.success(
+                        f'{experiment_name} saved successfully.'
+                    )
 
                     st.rerun()
+
+    # ========================================================
+    # EXPERIMENT PARAMETER REFERENCE
+    # ========================================================
+
+    st.subheader('Experiment Parameters')
+
+    parameter_df = pd.DataFrame([
+        {
+            'Experiment': name,
+            'Crossover Rate (CO_R)': values['co_r'],
+            'Mutation Rate (MUT_R)': values['mut_r'],
+            'Status': (
+                'Saved'
+                if name in st.session_state.experiments
+                else 'Not Saved'
+            )
+        }
+        for name, values in EXPERIMENTS.items()
+    ])
+
+    st.dataframe(
+        parameter_df,
+        width='stretch',
+        hide_index=True,
+        column_config={
+            'Crossover Rate (CO_R)':
+                st.column_config.NumberColumn(format='%.2f'),
+            'Mutation Rate (MUT_R)':
+                st.column_config.NumberColumn(format='%.2f')
+        }
+    )
+
+    st.caption(
+        'All experiments use the modified CSV dataset, '
+        '100 generations, population size 50 and random seed 42.'
+    )
 
 # ============================================================
 # TAB 2 — TRIAL COMPARISON
@@ -571,15 +696,16 @@ with scheduler:
 
 with comparison:
 
-    st.subheader('Three-Trial Experiment Comparison')
+    st.subheader('Default and Three-Trial Experiment Comparison')
 
-    trials = st.session_state.trials
+    saved_experiments = st.session_state.experiments
 
-    if not trials:
+    if not saved_experiments:
 
         st.markdown(
             '<div class="burgundy-info">'
-            'Run GA and save up to three trials in the GA Scheduler tab.'
+            'Run and save the Default experiment first. '
+            'Then save Trial 1, Trial 2 and Trial 3.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -587,28 +713,41 @@ with comparison:
     else:
 
         st.caption(
-            f"{len(trials)} of 3 trials saved for comparison."
+            f"{len(saved_experiments)} of 4 experiments saved."
         )
 
-        comparison_df = pd.DataFrame([
-            {
-                'Trial': f"Trial {t['trial']}",
-                'Crossover Rate (CO_R)': t['co_r'],
-                'Mutation Rate (MUT_R)': t['mut_r'],
-                'Generations': t['generations'],
-                'Population Size': t['population_size'],
-                'Random Seed': t['seed'],
-                'Best Fitness': t['score'],
-                'Upper Bound': t['upper'],
-                'Fitness (%)': (
-                    100 * t['score'] / t['upper']
-                    if t['upper'] else 0
-                )
-            }
-            for t in trials
-        ])
+        # ====================================================
+        # EXPERIMENT SUMMARY
+        # ====================================================
 
-        st.subheader('Trial Results Summary')
+        comparison_rows = []
+
+        for name in EXPERIMENT_ORDER:
+
+            if name not in saved_experiments:
+                continue
+
+            experiment = saved_experiments[name]
+
+            comparison_rows.append({
+                'Experiment': name,
+                'Crossover Rate (CO_R)': experiment['co_r'],
+                'Mutation Rate (MUT_R)': experiment['mut_r'],
+                'Generations': experiment['generations'],
+                'Population Size': experiment['population_size'],
+                'Random Seed': experiment['seed'],
+                'Best Fitness': experiment['score'],
+                'Upper Bound': experiment['upper'],
+                'Fitness (%)': (
+                    100 * experiment['score'] / experiment['upper']
+                    if experiment['upper']
+                    else 0
+                )
+            })
+
+        comparison_df = pd.DataFrame(comparison_rows)
+
+        st.subheader('Experiment Results Summary')
 
         st.dataframe(
             comparison_df,
@@ -628,11 +767,15 @@ with comparison:
             }
         )
 
+        # ====================================================
+        # FITNESS COMPARISON
+        # ====================================================
+
         st.subheader('Fitness Comparison')
 
         fitness_df = comparison_df[
-            ['Trial', 'Best Fitness']
-        ].set_index('Trial')
+            ['Experiment', 'Best Fitness']
+        ].set_index('Experiment')
 
         st.bar_chart(
             fitness_df,
@@ -640,66 +783,160 @@ with comparison:
             color='#A7234A'
         )
 
-        st.subheader('Generated Schedule for Each Trial')
+        # ====================================================
+        # FITNESS CONVERGENCE COMPARISON
+        # ====================================================
 
-        for t in trials:
+        st.subheader('Fitness Convergence Comparison')
+
+        convergence_frames = []
+
+        for name in EXPERIMENT_ORDER:
+
+            if name not in saved_experiments:
+                continue
+
+            experiment = saved_experiments[name]
+
+            trial_history = pd.DataFrame(
+                experiment['history']
+            ).copy()
+
+            if 'Generation' not in trial_history.columns:
+                continue
+
+            fitness_columns = [
+                col
+                for col in trial_history.columns
+                if col != 'Generation'
+                and pd.api.types.is_numeric_dtype(
+                    trial_history[col]
+                )
+            ]
+
+            if fitness_columns:
+
+                fitness_column = fitness_columns[0]
+
+                trial_history = trial_history[
+                    ['Generation', fitness_column]
+                ].rename(
+                    columns={
+                        fitness_column: name
+                    }
+                )
+
+                trial_history = trial_history.set_index(
+                    'Generation'
+                )
+
+                convergence_frames.append(trial_history)
+
+        if convergence_frames:
+
+            convergence_df = pd.concat(
+                convergence_frames,
+                axis=1
+            )
+
+            st.line_chart(
+                convergence_df,
+                width='stretch'
+            )
+
+        else:
+
+            st.info(
+                'Fitness convergence history is not available '
+                'for the saved experiments.'
+            )
+
+        # ====================================================
+        # GENERATED SCHEDULE FOR EACH EXPERIMENT
+        # ====================================================
+
+        st.subheader('Generated Schedule for Each Experiment')
+
+        for name in EXPERIMENT_ORDER:
+
+            if name not in saved_experiments:
+                continue
+
+            experiment = saved_experiments[name]
 
             with st.expander(
-                f"Trial {t['trial']} - Generated TV Schedule"
+                f'{name} - Generated TV Schedule'
             ):
 
                 st.caption(
-                    f"CO_R={t['co_r']:.2f} · "
-                    f"MUT_R={t['mut_r']:.2f} · "
-                    f"Generations={t['generations']} · "
-                    f"Population={t['population_size']} · "
-                    f"Seed={t['seed']}"
+                    f"CO_R={experiment['co_r']:.2f} · "
+                    f"MUT_R={experiment['mut_r']:.2f} · "
+                    f"Generations={experiment['generations']} · "
+                    f"Population={experiment['population_size']} · "
+                    f"Seed={experiment['seed']}"
                 )
 
                 st.metric(
                     'Best Fitness',
-                    f"{t['score']:.2f}"
+                    f"{experiment['score']:.2f}"
                 )
 
-                trial_schedule_df = pd.DataFrame(t['rows'])
+                experiment_schedule_df = pd.DataFrame(
+                    experiment['rows']
+                )
 
                 st.dataframe(
-                    trial_schedule_df,
+                    experiment_schedule_df,
                     width='stretch',
                     hide_index=True
                 )
 
                 st.download_button(
-                    f"⬇ Download Trial {t['trial']} Schedule",
-                    trial_schedule_df.to_csv(index=False),
-                    f"trial_{t['trial']}_schedule.csv",
-                    'text/csv',
+                    f'⬇ Download {name} Schedule',
+                    data=experiment_schedule_df.to_csv(
+                        index=False
+                    ),
+                    file_name=(
+                        name.lower().replace(' ', '_')
+                        + '_schedule.csv'
+                    ),
+                    mime='text/csv',
                     width='stretch',
-                    key=f"download_trial_{t['trial']}"
+                    key=f"download_{name.replace(' ', '_')}"
                 )
 
-        if len(trials) == 3:
+        # ====================================================
+        # BEST EXPERIMENT
+        # ====================================================
 
-            best_trial = max(
-                trials,
-                key=lambda t: t['score']
+        if len(saved_experiments) == 4:
+
+            best_name = max(
+                EXPERIMENT_ORDER,
+                key=lambda name: saved_experiments[name]['score']
             )
+
+            best_experiment = saved_experiments[best_name]
 
             st.markdown(
                 '<div class="burgundy-info">'
-                'All three trials completed. '
-                f"Trial {best_trial['trial']} achieved the highest fitness "
-                f"of {best_trial['score']:.2f}."
+                'All four experiments completed. '
+                f"{best_name} achieved the highest fitness "
+                f"of {best_experiment['score']:.2f}."
                 '</div>',
                 unsafe_allow_html=True
             )
 
+        # ====================================================
+        # CLEAR SAVED EXPERIMENTS
+        # ====================================================
+
         if st.button(
-            'Clear Saved Trials',
+            'Clear Saved Experiments',
             width='stretch'
         ):
 
-            st.session_state.trials = []
+            st.session_state.experiments = {}
 
             st.rerun()
 
@@ -716,7 +953,8 @@ with changes:
         st.markdown(
             '<div class="burgundy-info">'
             'Original ratings CSV is not available. '
-            'Add program_ratings_original.csv to compare rating changes.'
+            'Add program_ratings_original.csv to compare '
+            'rating changes.'
             '</div>',
             unsafe_allow_html=True
         )
@@ -724,10 +962,6 @@ with changes:
     else:
 
         try:
-
-            # =================================================
-            # LOAD ORIGINAL AND MODIFIED RATINGS
-            # =================================================
 
             original_df = pd.read_csv(ORIGINAL)
             modified_df = pd.read_csv(MODIFIED)
@@ -742,15 +976,7 @@ with changes:
                 and len(original_df) == len(modified_df)
             ):
 
-                # =============================================
-                # IDENTIFY PROGRAM COLUMN
-                # =============================================
-
                 program_column = original_df.columns[0]
-
-                # =============================================
-                # IDENTIFY HOURLY RATING COLUMNS
-                # =============================================
 
                 hour_columns = [
                     col
@@ -761,15 +987,10 @@ with changes:
                 if not hour_columns:
 
                     st.warning(
-                        'No hourly rating columns were found '
-                        'in the CSV files.'
+                        'No hourly rating columns were found.'
                     )
 
                 else:
-
-                    # =========================================
-                    # CHECK PROGRAM ORDER
-                    # =========================================
 
                     same_program_order = (
                         original_df[program_column]
@@ -783,19 +1004,18 @@ with changes:
                     if not same_program_order:
 
                         st.warning(
-                            'The program order differs between '
-                            'the original and modified CSV files. '
-                            'Rating comparison requires matching '
-                            'program rows.'
+                            'Program order differs between '
+                            'the original and modified CSV files.'
                         )
 
                     else:
 
                         # =====================================
-                        # BUILD CHANGED RATINGS LIST
+                        # FIND MODIFIED RATINGS
                         # =====================================
 
                         rating_changes = []
+                        changed_row_indices = set()
 
                         for row_index in range(len(original_df)):
 
@@ -805,16 +1025,13 @@ with changes:
 
                             for hour in hour_columns:
 
-                                original_rate = original_df.iloc[
-                                    row_index
-                                ][hour]
+                                original_rate = original_df.at[
+                                    row_index, hour
+                                ]
 
-                                modified_rate = modified_df.iloc[
-                                    row_index
-                                ][hour]
-
-                                # Treat two missing values
-                                # as unchanged.
+                                modified_rate = modified_df.at[
+                                    row_index, hour
+                                ]
 
                                 both_missing = (
                                     pd.isna(original_rate)
@@ -824,7 +1041,18 @@ with changes:
                                 if both_missing:
                                     continue
 
-                                if original_rate != modified_rate:
+                                if pd.isna(original_rate) or pd.isna(modified_rate):
+                                    is_changed = True
+                                else:
+                                    is_changed = (
+                                        original_rate != modified_rate
+                                    )
+
+                                if is_changed:
+
+                                    changed_row_indices.add(
+                                        row_index
+                                    )
 
                                     rating_changes.append({
                                         'Type of Program': program_name,
@@ -832,10 +1060,6 @@ with changes:
                                         'Original Rates': original_rate,
                                         'Modified Rates': modified_rate
                                     })
-
-                        # =====================================
-                        # CREATE COMPARISON DATAFRAME
-                        # =====================================
 
                         changes_df = pd.DataFrame(
                             rating_changes,
@@ -848,17 +1072,7 @@ with changes:
                         )
 
                         # =====================================
-                        # COUNT MODIFIED PROGRAM ROWS
-                        # =====================================
-
-                        changed_programs = (
-                            changes_df['Type of Program'].nunique()
-                            if not changes_df.empty
-                            else 0
-                        )
-
-                        # =====================================
-                        # 1. SUMMARY METRICS AT THE TOP
+                        # 1. SUMMARY METRICS
                         # =====================================
 
                         summary_left, summary_right = st.columns(2)
@@ -874,21 +1088,24 @@ with changes:
 
                             st.metric(
                                 'Rows with Changes',
-                                int(changed_programs)
+                                len(changed_row_indices)
                             )
 
                         # =====================================
                         # 2. RATING CHANGES COMPARISON
                         # =====================================
 
-                        st.subheader('Rating Changes Comparison')
+                        st.subheader(
+                            'Rating Changes Comparison'
+                        )
 
                         if changes_df.empty:
 
                             st.markdown(
                                 '<div class="burgundy-info">'
                                 'No rating changes were detected '
-                                'between the original and modified datasets.'
+                                'between the original and modified '
+                                'datasets.'
                                 '</div>',
                                 unsafe_allow_html=True
                             )
@@ -922,8 +1139,8 @@ with changes:
                             )
 
                             st.caption(
-                                'Only modified ratings are displayed. '
-                                'Each row represents one program and '
+                                'Only modified ratings are shown. '
+                                'Each row represents a program and '
                                 'hour with a changed rating.'
                             )
 
@@ -931,7 +1148,9 @@ with changes:
                         # 3. ORIGINAL PROGRAM RATINGS
                         # =====================================
 
-                        st.subheader('Original Program Ratings')
+                        st.subheader(
+                            'Original Program Ratings'
+                        )
 
                         st.dataframe(
                             original_df,
@@ -943,7 +1162,9 @@ with changes:
                         # 4. MODIFIED PROGRAM RATINGS
                         # =====================================
 
-                        st.subheader('Modified Program Ratings')
+                        st.subheader(
+                            'Modified Program Ratings'
+                        )
 
                         st.dataframe(
                             modified_df,
@@ -955,8 +1176,7 @@ with changes:
 
                 st.warning(
                     'Original and modified CSV files have '
-                    'different columns or row counts. '
-                    'The datasets cannot be compared automatically.'
+                    'different columns or row counts.'
                 )
 
                 st.subheader('Original Program Ratings')
