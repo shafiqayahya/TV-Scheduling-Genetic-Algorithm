@@ -57,16 +57,36 @@ section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
 
 /* SIDEBAR RUN BUTTON */
 section[data-testid="stSidebar"] .stButton button[kind="primary"] {
-    background:#F9A8C0 !important;
-    border: 1px solid #F6B3C6 !important;
+    background: #A7234A !important;
+    border: 1px solid #881337 !important;
     color: #FFFFFF !important;
     border-radius: 12px;
     font-weight: 700;
 }
 
 section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
-    background: #A7234A !important;
-    border-color: #FFE0E9 !important;
+    background: #881337 !important;
+    border-color: #64152D !important;
+    color: #FFFFFF !important;
+}
+
+/* SIDEBAR SAVED TRIALS CARD */
+section[data-testid="stSidebar"] [data-testid="stMetric"] {
+    background: #FFF4F7 !important;
+    border: 1px solid #F4C7D4 !important;
+}
+
+/* SIDEBAR SAVED TRIALS TEXT AND NUMBER */
+section[data-testid="stSidebar"] [data-testid="stMetricLabel"] p,
+section[data-testid="stSidebar"] [data-testid="stMetricValue"],
+section[data-testid="stSidebar"] [data-testid="stMetricValue"] > div {
+    color: #64152D !important;
+    -webkit-text-fill-color: #64152D !important;
+}
+
+/* SIDEBAR DEFAULT EXPANDED WIDTH */
+section[data-testid="stSidebar"][aria-expanded="true"] {
+    min-width: 290px;
 }
 
 /* ORIGINAL MAIN BUTTON STYLE */
@@ -95,7 +115,6 @@ with st.sidebar:
     st.header('GA Control Panel')
     co_r = st.slider('Crossover Rate (CO_R)', 0.0, 0.95, 0.80, 0.01)
     mut_r = st.number_input('Mutation Rate (MUT_R)', min_value=0.0, max_value=1.0, value=0.20, step=0.01, format='%.2f')
-    st.caption('Check the lecturer’s permitted mutation range before final trials.')
     generations = st.number_input('Generations', 1, 2000, 100)
     population_size = st.number_input('Population Size', 4, 1000, 50)
     seed = st.number_input('Random Seed', 0, 1000000, 42)
